@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "446002388185",
+    "firebase_url": "https://tripmessenger-88a46.firebaseio.com",
+    "project_id": "tripmessenger-88a46",
+    "storage_bucket": "tripmessenger-88a46.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:446002388185:android:d91179776ecf74de",
+        "android_client_info": {
+          "package_name": "com.example.joyrasmussen.tripmessenger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "446002388185-47j7f6e6r8170v2ah8ue6dm10t9ch3qp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.joyrasmussen.tripmessenger",
+            "certificate_hash": "5e5140dcc7e3c13a6de15103bd5b58ebfa20161c"
+          }
+        },
+        {
+          "client_id": "446002388185-mom2iab11sps5gcriilcf8137dq0fa2k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7MEH9IB_NyOdhLX_b9lK-zhZVCuUvcSA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "446002388185-mom2iab11sps5gcriilcf8137dq0fa2k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
