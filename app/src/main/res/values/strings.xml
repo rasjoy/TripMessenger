@@ -6,4 +6,7 @@
     <string name="changeAvatar">Change avatar</string>
     <string name="cancel">Cancel</string>
     <string name="update">Update</string>
+    <string name="editProfile">Edit Profile</string>
+    <string name="signOut">Sign Out</string>
+    <string name="manageFriends">Manage Friend Requests</string>
 </resources>
