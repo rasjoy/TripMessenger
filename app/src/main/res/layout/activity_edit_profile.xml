@@ -100,12 +100,13 @@
         android:id="@+id/uploadImageButton"
         android:layout_width="138dp"
         android:layout_height="48dp"
+        android:layout_above="@+id/linearLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="110dp"
+        android:onClick="upload"
         android:text="@string/changeAvatar"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp"
-        android:layout_marginBottom="110dp"
-        android:layout_above="@+id/linearLayout"
-        android:layout_centerHorizontal="true" />
+        tools:layout_editor_absoluteY="0dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
