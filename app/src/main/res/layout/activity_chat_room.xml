@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.joyrasmussen.tripmessenger.ChatRoom">
+
+    <RelativeLayout
+        android:id="@+id/detailLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true">
+
+        <ImageView
+            android:id="@+id/tripImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            app:srcCompat="@drawable/cast_abc_scrubber_control_to_pressed_mtrl_000" />
+
+        <TextView
+            android:id="@+id/tripName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="103dp"
+            android:layout_marginStart="103dp"
+            android:layout_toRightOf="@+id/tripImage"
+            android:text="@string/tripName" />
+
+        <TextView
+            android:id="@+id/tripLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/tripName"
+            android:layout_toRightOf="@+id/tripImage"
+            android:text="TextView" />
+    </RelativeLayout>
+
+</RelativeLayout>

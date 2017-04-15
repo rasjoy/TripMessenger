@@ -9,4 +9,5 @@
     <string name="editProfile">Edit Profile</string>
     <string name="signOut">Sign Out</string>
     <string name="manageFriends">Manage Friend Requests</string>
+    <string name="tripName">Trip Name:</string>
 </resources>
