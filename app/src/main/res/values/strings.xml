@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">TripMessenger</string>
+    <string name="firstName">First name:</string>
+    <string name="lastName">Last name:</string>
+    <string name="gender">Gender:</string>
+    <string name="changeAvatar">Change avatar</string>
+    <string name="cancel">Cancel</string>
+    <string name="update">Update</string>
 </resources>

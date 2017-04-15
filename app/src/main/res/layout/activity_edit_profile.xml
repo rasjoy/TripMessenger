@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:layout_editor_absoluteX="8dp"
+    tools:layout_editor_absoluteY="8dp">
+
+    <TextView
+        android:id="@+id/fNameProfileTv"
+        android:layout_width="91dp"
+        android:layout_height="wrap_content"
+        android:text="@string/firstName"
+        android:textSize="18sp"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp"
+        android:layout_alignBaseline="@+id/fNameEditText"
+        android:layout_alignBottom="@+id/fNameEditText"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:id="@+id/fNameEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="43dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/uploadImageButton"
+        android:layout_alignStart="@+id/uploadImageButton" />
+
+    <TextView
+        android:id="@+id/lNameProfileTv"
+        android:layout_width="90dp"
+        android:layout_height="wrap_content"
+        android:text="@string/lastName"
+        android:textSize="18sp"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp"
+        android:layout_alignBaseline="@+id/lNameEditText"
+        android:layout_alignBottom="@+id/lNameEditText"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:id="@+id/lNameEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="43dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp"
+        android:layout_below="@+id/fNameEditText"
+        android:layout_alignLeft="@+id/fNameEditText"
+        android:layout_alignStart="@+id/fNameEditText" />
+
+    <TextView
+        android:id="@+id/genderProfileTv"
+        android:layout_width="62dp"
+        android:layout_height="wrap_content"
+        android:text="@string/gender"
+        android:textSize="18sp"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp"
+        android:layout_marginTop="13dp"
+        android:layout_below="@+id/lNameEditText"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:id="@+id/genderProfileET"
+        android:layout_width="wrap_content"
+        android:layout_height="43dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp"
+        android:layout_alignBaseline="@+id/genderProfileTv"
+        android:layout_alignBottom="@+id/genderProfileTv"
+        android:layout_alignLeft="@+id/lNameEditText"
+        android:layout_alignStart="@+id/lNameEditText" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        app:srcCompat="@drawable/common_google_signin_btn_icon_dark"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_above="@+id/uploadImageButton"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/common_google_signin_btn_icon_dark"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp" />
+
+    <Button
+        android:id="@+id/uploadImageButton"
+        android:layout_width="138dp"
+        android:layout_height="48dp"
+        android:text="@string/changeAvatar"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp"
+        android:layout_marginBottom="110dp"
+        android:layout_above="@+id/linearLayout"
+        android:layout_centerHorizontal="true" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/linearLayout">
+
+        <Button
+            android:id="@+id/cancelProfilebutton"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="0dp"
+            android:layout_marginStart="0dp"
+            android:layout_toEndOf="@+id/fNameProfileTv"
+
+            android:layout_toRightOf="@+id/fNameProfileTv"
+            android:layout_weight="1"
+            android:onClick="cancel"
+            android:text="@string/cancel" />
+
+        <Button
+            android:id="@+id/updateProfileButton"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_alignParentBottom="true"
+            android:layout_toEndOf="@+id/cancelProfilebutton"
+            android:layout_toRightOf="@+id/cancelProfilebutton"
+            android:layout_weight="1"
+            android:onClick="update"
+            android:text="@string/update" />
+    </LinearLayout>
+
+</RelativeLayout>
+
+
+
