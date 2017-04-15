@@ -26,11 +26,6 @@ public class Trip {
         members = new ArrayList<>();
         members.add(creator);
     }
-
-
-
-
-
-
     
+
 }
