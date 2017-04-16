@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/edtiTripView"
+        android:title="@string/editTrip" />
+    <item
+        android:id="@+id/goToChatMenuTrip"
+        android:title="@string/enterChat" />
+    <item
+        android:id="@+id/signOutTripViewMenu"
+        android:title="@string/signOut" />
+</menu>

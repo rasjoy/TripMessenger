@@ -7,6 +7,121 @@
     tools:context="com.example.joyrasmussen.tripmessenger.ViewTripActivity">
 
 
+    <TextView
+        android:id="@+id/tripNameViewTrip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:text="trip name" />
 
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/buttonHolderTrip"
+        android:layout_below="@+id/memberTextViewTrip"
+        android:layout_weight="0.02" />
+
+    <TextView
+        android:id="@+id/memberTextViewTrip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/detailholderTripView"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="0.02"
+        android:text="@string/tripMembers" />
+
+    <LinearLayout
+        android:id="@+id/detailholderTripView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tripNameViewTrip"
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/imageHolderTrip"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0.02"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/tripViewImage"
+                android:layout_width="125dp"
+                android:layout_height="125dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/common_google_signin_btn_icon_dark" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1.01">
+
+
+
+                <TextView
+                    android:id="@+id/locationheaderTripView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/loaction" />
+
+                <TextView
+                    android:id="@+id/locationTripView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="13dp"
+                    android:layout_marginStart="13dp"
+                    android:layout_toEndOf="@+id/locationheaderTripView"
+                    android:layout_toRightOf="@+id/locationheaderTripView"
+                    android:layout_weight="1"
+                    android:text="TextView" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/buttonHolderTrip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_weight="0.02">
+
+        <Button
+            android:id="@+id/editTripButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="54dp"
+            android:layout_marginRight="54dp"
+            android:layout_toLeftOf="@+id/enterChatTripView"
+            android:layout_toStartOf="@+id/enterChatTripView"
+            android:layout_weight="1"
+            android:text="@string/editTrip" />
+
+        <Button
+            android:id="@+id/enterChatTripView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
+            android:layout_marginEnd="27dp"
+            android:layout_marginRight="27dp"
+            android:layout_weight="1"
+            android:text="@string/enterChat" />
+    </RelativeLayout>
 
 </RelativeLayout>
