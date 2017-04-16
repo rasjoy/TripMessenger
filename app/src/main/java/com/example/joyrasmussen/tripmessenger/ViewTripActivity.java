@@ -36,8 +36,12 @@ public class ViewTripActivity extends AppCompatActivity {
     Trip thisTrip;
     DatabaseReference tripReference;
     DatabaseReference mDatabase;
+    DatabaseReference userReference;
     String tripID;
     ValueEventListener tripListener;
+    boolean isOwner;
+    DatabaseReference membersReference;
+
 
 
     @Override
@@ -62,19 +66,42 @@ public class ViewTripActivity extends AppCompatActivity {
         image = (ImageView) findViewById(R.id.tripViewImage);
         tripID = getIntent().getStringExtra("tripID");
         tripReference = mDatabase.child("trips").child(tripID);
+        membersReference = mDatabase.child("tripMembers").child(tripID);
 
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
+        if(!isOwner){
+            menu.getItem(R.id.edtiTripView).setVisible(false);
+
+        }
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.trip_view_menu, menu);
         return true;
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
+       switch (item.getItemId()){
+           case R.id.signOutTripViewMenu:
+               if(isOwner){
+
+                }else{
+
+                }
+                return true;
+           case R.id.goToChatMenuTrip:
+               //start chat intent for this activity
+               return true;
+           case R.id.edtiTripView:
+
+               return true;
+           default:
+               return  true;
+
+       }
     }
 
     @Override
@@ -86,8 +113,25 @@ public class ViewTripActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 thisTrip = dataSnapshot.getValue(Trip.class);
                 location.setText(thisTrip.getLocation());
-                if(thisTrip.getCreator() == tripID){
+                String creator =thisTrip.getCreator();
+                if(creator.equals( tripID)){
+                        owner.setText("You");
+                    isOwner = true;
 
+                }else{
+                    userReference = mDatabase.child("users").child(creator);
+                    userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            User creater = dataSnapshot.getValue(User.class);
+                            owner.setText(creater.getFirstName() + " " + creater.getLastName());
+                            isOwner= false;
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
 
                 }
             }
