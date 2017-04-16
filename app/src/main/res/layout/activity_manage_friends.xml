@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context="com.example.joyrasmussen.tripmessenger.ManageFriends">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="3"
+        android:id="@+id/linearLayout2">
+
+        <EditText
+            android:id="@+id/addFriendET"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_weight="1.4"
+            android:ems="10"
+            android:hint="@string/friendsName"
+            android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/addFriendButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_weight=".8"
+            android:text="@string/add" />
+
+        <Button
+            android:id="@+id/discoverFriendButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/addFriendET"
+            android:layout_toRightOf="@+id/addFriendET"
+            android:layout_weight=".8"
+            android:text="@string/discover" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/linearLayout3">
+
+        <TextView
+            android:id="@+id/friendsTab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/friends"
+            android:textAlignment="center"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/pendingTab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/pending"
+            android:textAlignment="center"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/approveTab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/approve"
+            android:textAlignment="center"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/friendsRecycleView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/linearLayout3"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/linearLayout2" />
+
+</RelativeLayout>

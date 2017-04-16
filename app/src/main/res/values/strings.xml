@@ -16,4 +16,11 @@
     <string name="signin">Sign In</string>
     <string name="loaction">Location:</string>
     <string name="tripMembers">Trip Members:</string>
+    <string name="friendsName">Friend\'s name</string>
+    <string name="add">Add</string>
+    <string name="discover">Discover</string>
+    <string name="search">Search</string>
+    <string name="friends">Friends</string>
+    <string name="pending">Pending</string>
+    <string name="approve">Approve</string>
 </resources>

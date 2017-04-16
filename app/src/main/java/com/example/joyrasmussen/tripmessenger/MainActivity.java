@@ -99,6 +99,8 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
 
                 return true;
             case R.id.mangageFriendsMain:
+                Intent mf = new Intent(this, ManageFriends.class);
+                startActivity(mf);
                 return true;
             case R.id.editProfileMain:
                 Intent i = new Intent(this, EditProfile.class);
