@@ -10,4 +10,8 @@
     <string name="signOut">Sign Out</string>
     <string name="manageFriends">Manage Friend Requests</string>
     <string name="tripName">Trip Name:</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="signin">Sign In</string>
 </resources>

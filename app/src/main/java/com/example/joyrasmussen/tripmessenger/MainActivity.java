@@ -22,11 +22,12 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Arrays;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SignInFragment.OnFragmentInteractionListener {
     FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    FirebaseUser user;
 
-    private static final int SIGN_IN = 123;
+     static final int SIGN_IN = 123;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,19 +38,12 @@ public class MainActivity extends AppCompatActivity {
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
+                user = firebaseAuth.getCurrentUser();
                 if (user != null) {
 
-
                 } else {
-                    startActivityForResult(
-                            AuthUI.getInstance()
-                                    .createSignInIntentBuilder()
-                                    .setLogo(R.drawable.common_google_signin_btn_icon_light)
-                                    .setProviders(Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()))
-                                    .setIsSmartLockEnabled(false)
-                                    .build(),
-                            SIGN_IN);
+                    getSupportFragmentManager().beginTransaction()
+                            .add(R.id.main_activity, new SignInFragment(), "first" ).commit();
                 }
             }
         };
@@ -77,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
 
-
                 return true;
             case R.id.mangageFriendsMain:
                 return true;
@@ -103,4 +96,8 @@ public class MainActivity extends AppCompatActivity {
             auth.removeAuthStateListener(mAuthListener);
         }
     }
+
+
+
+
 }
