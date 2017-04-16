@@ -1,34 +1,43 @@
 package com.example.joyrasmussen.tripmessenger;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ViewTripActivity extends AppCompatActivity {
     FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     FirebaseUser user;
-
+    LinearLayoutManager mLayoutManager;
     TextView location, name, owner;
     Button editTrip, enterChatroom;
     RecyclerView members;
@@ -37,10 +46,15 @@ public class ViewTripActivity extends AppCompatActivity {
     DatabaseReference tripReference;
     DatabaseReference mDatabase;
     DatabaseReference userReference;
+
     String tripID;
     ValueEventListener tripListener;
+    ValueEventListener memberListener;
+    Collection<Object> whoIsAMember;
     boolean isOwner;
     DatabaseReference membersReference;
+    FirebaseRecyclerAdapter<User, UserPopulateHolder> mAdapter;
+    Query query;
 
 
 
@@ -54,7 +68,7 @@ public class ViewTripActivity extends AppCompatActivity {
     }
     private void populateEverything(){
         mDatabase = FirebaseDatabase.getInstance().getReference();
-
+        whoIsAMember = new ArrayList<>();
         auth = FirebaseAuth.getInstance();
         authListener();
         location = (TextView) findViewById(R.id.locationTripView);
@@ -67,8 +81,28 @@ public class ViewTripActivity extends AppCompatActivity {
         tripID = getIntent().getStringExtra("tripID");
         tripReference = mDatabase.child("trips").child(tripID);
         membersReference = mDatabase.child("tripMembers").child(tripID);
-
-
+        populateImage(thisTrip.getPhoto());
+        query = userReference.orderByKey();
+        mAdapter = new FirebaseRecyclerAdapter<User, UserPopulateHolder>(User.class, R.layout.trip_members, UserPopulateHolder.class, query) {
+            @Override
+            protected void populateViewHolder(UserPopulateHolder viewHolder, User model, int position) {
+                if(whoIsAMember.contains(model.getId())){
+                    viewHolder.isPart(model.getFirstName(), model.getLastName(), model.getImageURL());
+                    viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(ViewTripActivity.this, ChatRoom.class);
+                            intent.putExtra("tripID", tripID);
+                            startActivity(intent);
+                        }
+                    });
+                }
+            }
+        };
+        mLayoutManager = new LinearLayoutManager(this);
+        members.setHasFixedSize(false);
+        members.setLayoutManager(mLayoutManager);
+        members.setAdapter(mAdapter);
     }
 
     @Override
@@ -141,10 +175,23 @@ public class ViewTripActivity extends AppCompatActivity {
 
             }
         };
-
-
+        tripReference.addValueEventListener(listen);
         tripListener = listen;
+        ValueEventListener listenMembers = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                whoIsAMember.clear();
+                    Map<String, Object> td = (HashMap<String,Object>) dataSnapshot.getValue();
+                    whoIsAMember = td.values();
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        membersReference.addValueEventListener(listenMembers);
+        memberListener = listenMembers;
 
     }
 
@@ -165,8 +212,37 @@ public class ViewTripActivity extends AppCompatActivity {
 
     }
 
-    private void populateImage(){
+    private void populateImage(String url){
+        if(url != null && !url.equals("")) {
 
-
+            Picasso.Builder builder = new Picasso.Builder(image.getContext());
+            builder.listener(new Picasso.Listener() {
+                @Override
+                public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
+                    exception.printStackTrace();
+                    Log.i("uri: ", uri + "");
+                }
+            });
+            builder.build().load(url).into(image);
+        }
     }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    public void onChatActivity(View v){
+        Intent intent = new Intent(ViewTripActivity.this, ChatRoom.class);
+        intent.putExtra("tripID", tripID);
+        startActivity(intent);
+   }
+
+   public void onEditActivity(View v){
+       Intent intent = new Intent(ViewTripActivity.this, EditTripActivity.class);
+       intent.putExtra("tripID", tripID);
+       startActivity(intent);
+   }
+
 }

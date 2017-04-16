@@ -130,6 +130,7 @@
             android:layout_toLeftOf="@+id/enterChatTripView"
             android:layout_toStartOf="@+id/enterChatTripView"
             android:layout_weight="1"
+            android:onClick="onEditActivity"
             android:text="@string/editTrip" />
 
         <Button
@@ -144,6 +145,7 @@
             android:layout_marginEnd="27dp"
             android:layout_marginRight="27dp"
             android:layout_weight="1"
+            android:onClick="onChatActivity"
             android:text="@string/enterChat" />
     </RelativeLayout>
 

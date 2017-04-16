@@ -6,7 +6,7 @@ import java.util.List;
 
 public class User {
 
-    String firstName, lastName, gender, imageURL, fullName;
+    String id, firstName, lastName, gender, imageURL, fullName;
     List<String> friends; //Current friends
     List<String> approval; //Friends you need to approve
     List<String> pending; //Friends that have to approve you
@@ -21,6 +21,14 @@ public class User {
         this.gender = gender;
         this.imageURL = imageURL;
 
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getFirstName() {

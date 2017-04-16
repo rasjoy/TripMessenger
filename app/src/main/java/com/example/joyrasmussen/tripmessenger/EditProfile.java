@@ -98,48 +98,55 @@ public class EditProfile extends AppCompatActivity {
         userObject.setFirstName(fname);
         userObject.setLastName(lname);
         userObject.setGender(gender);
+        userObject.setId(userID);
         userObject.setFullName(fullName);
         update.setEnabled(false);
         cancel.setEnabled(false);
-        try {
-
-            StorageReference avatarRef = storageRef.child("images/" + userID + ".png");
-
-            UploadTask uploadTask = avatarRef.putFile(filePath);
-
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle unsuccessful uploads
-                    Toast.makeText(EditProfile.this, "Image upload failure", Toast.LENGTH_SHORT).show();
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                    @SuppressWarnings("VisibleForTests") String downloadUrl = taskSnapshot.getDownloadUrl().toString();
-
-                    //mDatabase.child("users").child(userID).child("imageURL").setValue(downloadUrl);
-
-                    path = "images/" + userID + ".png";
+        if(filePath != null) {
+            try {
 
 
-                    Log.i("image: ", downloadUrl);
-                    //path = "images/" + userID + ".png";
-                    path = downloadUrl;
-                    setImage(downloadUrl);
-                   userObject.setImageURL(downloadUrl);
-                    userReference.child(userID).setValue(userObject);
+                StorageReference avatarRef = storageRef.child("images/" + userID + ".png");
 
-                    userReference.child(userID).setValue(userObject);
-                    Toast.makeText(EditProfile.this, "Profile Successfully Updated", Toast.LENGTH_LONG).show();
-                    finish();
+                UploadTask uploadTask = avatarRef.putFile(filePath);
 
-                }
-            });
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                        Toast.makeText(EditProfile.this, "Image upload failure", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-        } catch (Exception e) {
-            e.printStackTrace();
+                        @SuppressWarnings("VisibleForTests") String downloadUrl = taskSnapshot.getDownloadUrl().toString();
+
+                        //mDatabase.child("users").child(userID).child("imageURL").setValue(downloadUrl);
+
+                        path = "images/" + userID + ".png";
+
+                        Log.i("image: ", downloadUrl);
+                        //path = "images/" + userID + ".png";
+                        path = downloadUrl;
+                        setImage(downloadUrl);
+                        userObject.setImageURL(downloadUrl);
+                        userObject.setId(userID);
+                        userReference.child(userID).setValue(userObject);
+
+                        userReference.child(userID).setValue(userObject);
+                        Toast.makeText(EditProfile.this, "Profile Successfully Updated", Toast.LENGTH_LONG).show();
+                        finish();
+
+                    }
+                });
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else{
+            userReference.child(userID).setValue(userObject);
+            finish();
         }
        // Log.d("update: ", path);
         //userObject.setImageURL(path);
