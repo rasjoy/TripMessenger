@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-tools:context="com.example.joyrasmussen.tripmessenger.ManageFriends">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.joyrasmussen.tripmessenger.ManageFriends">
 
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="3"
-        android:id="@+id/linearLayout2">
+        android:weightSum="3">
 
         <EditText
             android:id="@+id/addFriendET"
@@ -35,6 +35,7 @@ tools:context="com.example.joyrasmussen.tripmessenger.ManageFriends">
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:layout_weight=".8"
+            android:onClick="add"
             android:text="@string/add" />
 
         <Button
@@ -45,18 +46,18 @@ tools:context="com.example.joyrasmussen.tripmessenger.ManageFriends">
             android:layout_toEndOf="@+id/addFriendET"
             android:layout_toRightOf="@+id/addFriendET"
             android:layout_weight=".8"
-            android:text="@string/discover" />
+            android:text="@string/search" />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/linearLayout3">
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/friendsTab"
@@ -93,6 +94,7 @@ tools:context="com.example.joyrasmussen.tripmessenger.ManageFriends">
         android:layout_above="@+id/linearLayout3"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/linearLayout2" />
+        android:layout_below="@+id/linearLayout2"
+        android:isScrollContainer="false"/>
 
 </RelativeLayout>

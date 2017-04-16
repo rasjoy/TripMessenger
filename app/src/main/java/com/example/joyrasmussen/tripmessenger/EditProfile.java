@@ -87,7 +87,6 @@ public class EditProfile extends AppCompatActivity {
             }
         });
 
-
     }
 
     public void update(View v) {
@@ -95,9 +94,11 @@ public class EditProfile extends AppCompatActivity {
         fname = fnameET.getText().toString();
         lname = lnameET.getText().toString();
         gender = genderET.getText().toString();
+        String fullName = fname + "_" + lname;
         userObject.setFirstName(fname);
         userObject.setLastName(lname);
         userObject.setGender(gender);
+        userObject.setFullName(fullName);
         update.setEnabled(false);
         cancel.setEnabled(false);
         try {
