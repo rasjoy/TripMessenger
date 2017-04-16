@@ -6,7 +6,7 @@ public class User {
     String firstName, lastName, gender, imageURL;
 
     public User(){
-
+        firstName = lastName = gender = imageURL = "";
     }
 
     public User(String firstName, String lastName, String gender, String imageURL) {
