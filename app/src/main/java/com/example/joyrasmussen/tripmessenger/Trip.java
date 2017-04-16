@@ -13,8 +13,8 @@ public class Trip {
     String location;
     String photo;
     String creator;
-    ArrayList<String> members;
-    HashMap<String, Message> posts;
+
+
 
     public Trip(long id, String name, String location, String photo, String creator) {
         this.id = id;
@@ -22,9 +22,47 @@ public class Trip {
         this.location = location;
         this.photo = photo;
         this.creator = creator;
-        posts = new HashMap<>();
-        members = new ArrayList<>();
-        members.add(creator);
+
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
 
