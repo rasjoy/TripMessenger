@@ -67,6 +67,7 @@
             android:layout_weight="1"
             android:text="@string/friends"
             android:textAlignment="center"
+            android:textColor="@color/authui_colorAccent"
             android:textSize="18sp" />
 
         <TextView
@@ -88,14 +89,13 @@
             android:textSize="18sp" />
     </LinearLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/friendsRecycleView"
+    <ListView
+        android:id="@+id/friendsListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/linearLayout3"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/linearLayout2"
-        android:isScrollContainer="false"/>
+        android:layout_below="@+id/linearLayout2" />
 
 </RelativeLayout>
