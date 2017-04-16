@@ -18,8 +18,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ChatRoom"></activity>
-        <activity android:name=".EditProfile"></activity>
+        <activity android:name=".ChatRoom" />
+        <activity android:name=".EditProfile" />
+        <activity android:name=".ViewTripActivity"></activity>
     </application>
 
 </manifest>

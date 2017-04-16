@@ -72,7 +72,7 @@ public class EditProfile extends AppCompatActivity {
                     userObject = dataSnapshot.child(userID).getValue(User.class);
                     //populate the edit text here
 
-                    //use the setimage method to populate image
+
                 }else {
 
                 }
@@ -117,7 +117,7 @@ public class EditProfile extends AppCompatActivity {
 
                     //mDatabase.child("users").child(userID).child("imageURL").setValue(downloadUrl);
                     path = "images/" + userID + ".png";
-                    setImage(path);
+
 
 
                 }
@@ -127,7 +127,7 @@ public class EditProfile extends AppCompatActivity {
             e.printStackTrace();
         }
         userObject.setImageURL(path);
-       userReference.child(userID).setValue(userObject);
+         userReference.child(userID).setValue(userObject);
         Toast.makeText(EditProfile.this, "Profile Successfully Updated", Toast.LENGTH_LONG).show();
         finish();
         //mDatabase.child("users").child(userID).child("firstName").setValue(fname);
