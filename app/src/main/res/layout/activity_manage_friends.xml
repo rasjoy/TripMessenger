@@ -46,6 +46,7 @@
             android:layout_toEndOf="@+id/addFriendET"
             android:layout_toRightOf="@+id/addFriendET"
             android:layout_weight=".8"
+            android:onClick="search"
             android:text="@string/search" />
 
     </LinearLayout>

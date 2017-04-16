@@ -1,11 +1,13 @@
 package com.example.joyrasmussen.tripmessenger;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -48,7 +50,7 @@ public class ManageFriends extends AppCompatActivity {
         userID = user.getUid();
         userReference = mDatabase.child("users");
 
-        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        userReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChild(user.getUid())) {
@@ -65,7 +67,6 @@ public class ManageFriends extends AppCompatActivity {
             }
         });
 
-
     }
 
     public void add(View v) {
@@ -79,12 +80,14 @@ public class ManageFriends extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot thisSnapshot : dataSnapshot.getChildren()) {
 
-                    List<String> list = new ArrayList<String>();
-                    list.add(userID);
+                    //put this user's ID in their friend's approval stuff
+                    mDatabase.child("approval").child(thisSnapshot.getKey()).child(userID).setValue("true");
 
-                    mDatabase.child(thisSnapshot.getKey()).child("approval").push().setValue(list);
+                    //put the friends ID in this user's pending stuff
+                    mDatabase.child("pending").child(userID).child(thisSnapshot.getKey()).setValue("true");
 
-
+                    Toast.makeText(ManageFriends.this, "Friend request sent", Toast.LENGTH_SHORT).show();
+                    friendName.setText("");
                 }
             }
 
@@ -94,8 +97,11 @@ public class ManageFriends extends AppCompatActivity {
             }
         });
 
-//
+    }
 
+    public void search(View v){
 
+        Intent i = new Intent(this, FindFriends.class);
+        startActivity(i);
     }
 }
