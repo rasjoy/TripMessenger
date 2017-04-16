@@ -72,7 +72,7 @@ public class EditProfile extends AppCompatActivity {
                     userObject = dataSnapshot.child(userID).getValue(User.class);
                     //populate the edit text here
 
-
+                    //use the setimage method to populate image
                 }else {
 
                 }
@@ -117,17 +117,7 @@ public class EditProfile extends AppCompatActivity {
 
                     //mDatabase.child("users").child(userID).child("imageURL").setValue(downloadUrl);
                     path = "images/" + userID + ".png";
-                    Picasso.Builder builder = new Picasso.Builder(EditProfile.this);
-                    builder.listener(new Picasso.Listener()
-                    {
-                        @Override
-                        public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception)
-                        {
-                            exception.printStackTrace();
-                            Log.i("uri: ", uri + "");
-                        }
-                    });
-                    builder.build().load(path).into(image);
+                    setImage(path);
 
 
                 }
@@ -166,5 +156,19 @@ public class EditProfile extends AppCompatActivity {
 
     public void cancel(View v) {
         finish();
+    }
+
+    public void setImage(String url){
+        Picasso.Builder builder = new Picasso.Builder(EditProfile.this);
+        builder.listener(new Picasso.Listener()
+        {
+            @Override
+            public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception)
+            {
+                exception.printStackTrace();
+                Log.i("uri: ", uri + "");
+            }
+        });
+        builder.build().load(url).into(image);
     }
 }
