@@ -1,9 +1,14 @@
 package com.example.joyrasmussen.tripmessenger;
 
 
+import java.util.List;
+
 public class User {
 
     String firstName, lastName, gender, imageURL;
+    List<String> friends; //Current friends
+    List<String> approval; //Friends you need to approve
+    List<String> pending; //Friends that have to approve you
 
     public User(){
         firstName = lastName = gender = imageURL = "";

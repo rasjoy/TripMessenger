@@ -20,6 +20,9 @@
         </activity>
         <activity android:name=".ChatRoom" />
         <activity android:name=".EditProfile" />
+        <activity android:name=".ManageFriends"></activity>
+        <activity android:name=".ChatRoom" />
+        <activity android:name=".EditProfile" />
         <activity android:name=".ViewTripActivity"></activity>
     </application>
 
