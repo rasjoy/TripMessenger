@@ -184,7 +184,6 @@ public class ViewTripActivity extends AppCompatActivity {
                     Map<String, Object> td = (HashMap<String,Object>) dataSnapshot.getValue();
                     whoIsAMember = td.values();
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -231,6 +230,12 @@ public class ViewTripActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        if(tripListener != null){
+            membersReference.removeEventListener(memberListener);
+        }
+        if(tripListener != null){
+            tripReference.removeEventListener(tripListener);
+        }
     }
 
     public void onChatActivity(View v){

@@ -113,40 +113,28 @@
 
     </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/buttonHolderTrip"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_weight="0.02">
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/editTripButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginEnd="54dp"
-            android:layout_marginRight="54dp"
-            android:layout_toLeftOf="@+id/enterChatTripView"
-            android:layout_toStartOf="@+id/enterChatTripView"
-            android:layout_weight="1"
-            android:onClick="onEditActivity"
+            android:layout_weight="2.17"
+            android:onClick="onEdit"
             android:text="@string/editTrip" />
 
         <Button
             android:id="@+id/enterChatTripView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_centerInParent="true"
-            android:layout_marginEnd="27dp"
-            android:layout_marginRight="27dp"
             android:layout_weight="1"
             android:onClick="onChatActivity"
             android:text="@string/enterChat" />
-    </RelativeLayout>
+    </LinearLayout>
 
 </RelativeLayout>

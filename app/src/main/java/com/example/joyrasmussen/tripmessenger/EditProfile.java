@@ -172,7 +172,6 @@ public class EditProfile extends AppCompatActivity {
             filePath = data.getData();
            setImage(filePath.toString());
 
-
         }
     }
 
