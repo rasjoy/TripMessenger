@@ -17,6 +17,7 @@
         android:text="trip name" />
 
     <android.support.v7.widget.RecyclerView
+        android:id="@+id/tripMemberRecycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/buttonHolderTrip"
@@ -58,6 +59,28 @@
                 android:scaleType="centerInside"
                 app:srcCompat="@drawable/common_google_signin_btn_icon_dark" />
         </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/owner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.02">
+
+            <TextView
+                android:id="@+id/ownerHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/owner" />
+
+            <TextView
+                android:id="@+id/ownerETtripView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginLeft="12dp"
+                android:layout_toRightOf="@+id/ownerHeader"
+                android:text="TextView" />
+        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="wrap_content"
