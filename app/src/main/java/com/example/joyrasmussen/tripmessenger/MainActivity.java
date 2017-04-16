@@ -17,8 +17,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
 
@@ -26,7 +29,9 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
     FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     FirebaseUser user;
-
+    DatabaseReference userReference;
+    DatabaseReference tripReference;
+    DatabaseReference mDatabase;
      static final int SIGN_IN = 123;
 
     @Override
@@ -34,13 +39,35 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         auth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        userReference = mDatabase.child("users");
+        tripReference = mDatabase.child("trips");
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 user = firebaseAuth.getCurrentUser();
                 if (user != null) {
+                    Log.d( "onAuthStateChanged: ", "signed in");
+                    userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.hasChild(user.getUid())){
+                                Log.d( "onDataChange: ", "user is in database");
 
+                            }else {
+                                Toast.makeText(MainActivity.this, "Please complete your profile", Toast.LENGTH_LONG).show();
+                                Intent i = new Intent(MainActivity.this, EditProfile.class);
+                                startActivity(i);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                        //start edit profile automatically
                 } else {
                     getSupportFragmentManager().beginTransaction()
                             .add(R.id.main_activity, new SignInFragment(), "first" ).commit();
@@ -87,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
     protected void onStart() {
         super.onStart();
         auth.addAuthStateListener(mAuthListener);
+        userOnChangeListener();
     }
 
     @Override
@@ -97,7 +125,25 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
         }
     }
 
+    public void tripsChangeListener(){
 
+
+    }
+    public void userOnChangeListener(){
+        userReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
 
 
 }
