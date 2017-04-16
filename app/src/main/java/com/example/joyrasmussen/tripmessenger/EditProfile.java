@@ -80,7 +80,7 @@ public class EditProfile extends AppCompatActivity {
     public void upload(View v) {
         Intent intent = new Intent();
         intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
+        intent.setAction(Intent.ACTION_PICK);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), 111);
     }
 

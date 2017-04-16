@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
                                 startActivity(i);
                             }
                         }
-
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
 
@@ -135,7 +134,6 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
             public void onDataChange(DataSnapshot dataSnapshot) {
 
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
