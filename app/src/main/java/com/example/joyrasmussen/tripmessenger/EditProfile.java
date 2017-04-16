@@ -27,6 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.util.UUID;
@@ -35,13 +36,16 @@ public class EditProfile extends AppCompatActivity {
 
     EditText fnameET, lnameET, genderET;
     ImageView image;
+    User userObject;
 
-    String fname, lname, gender, userID;
+    String fname, lname, gender, userID, path;
 
-    private DatabaseReference mDatabase;
+    private DatabaseReference mDatabase, userReference;
     FirebaseUser user;
     FirebaseStorage storage;
     StorageReference storageRef;
+    Uri filePath;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,10 +58,31 @@ public class EditProfile extends AppCompatActivity {
         fnameET = (EditText) findViewById(R.id.fNameEditText);
         lnameET = (EditText) findViewById(R.id.lNameEditText);
         genderET = (EditText) findViewById(R.id.genderProfileET);
+        image = (ImageView) findViewById(R.id.imageView);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         user = FirebaseAuth.getInstance().getCurrentUser();
+        userReference = mDatabase.child("users");
         userID = user.getUid();
+        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.hasChild(user.getUid())){
+                    Log.d( "onDataChange: ", "user is in database");
+                    userObject = dataSnapshot.child(userID).getValue(User.class);
+                    //populate the edit text here
+
+
+                }else {
+
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        userObject = new User();
 
         //put code here to auto-fill first name, last name, gender if they are already set
 
@@ -69,10 +94,55 @@ public class EditProfile extends AppCompatActivity {
         fname = fnameET.getText().toString();
         lname = lnameET.getText().toString();
         gender = genderET.getText().toString();
+        userObject.setFirstName(fname);
+        userObject.setLastName(lname);
+        userObject.setGender(gender);
+        try {
 
-        mDatabase.child("users").child(userID).child("firstName").setValue(fname);
-        mDatabase.child("users").child(userID).child("lastName").setValue(lname);
-        mDatabase.child("users").child(userID).child("gender").setValue(gender);
+            StorageReference avatarRef = storageRef.child("images/" + userID + ".png");
+
+            UploadTask uploadTask = avatarRef.putFile(filePath);
+
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle unsuccessful uploads
+                    Toast.makeText(EditProfile.this, "Image upload failure", Toast.LENGTH_SHORT).show();
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                    @SuppressWarnings("VisibleForTests") String downloadUrl = taskSnapshot.getDownloadUrl().toString();
+
+                    //mDatabase.child("users").child(userID).child("imageURL").setValue(downloadUrl);
+                    path = "images/" + userID + ".png";
+                    Picasso.Builder builder = new Picasso.Builder(EditProfile.this);
+                    builder.listener(new Picasso.Listener()
+                    {
+                        @Override
+                        public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception)
+                        {
+                            exception.printStackTrace();
+                            Log.i("uri: ", uri + "");
+                        }
+                    });
+                    builder.build().load(path).into(image);
+
+
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        userObject.setImageURL(path);
+       userReference.child(userID).setValue(userObject);
+        Toast.makeText(EditProfile.this, "Profile Successfully Updated", Toast.LENGTH_LONG).show();
+        finish();
+        //mDatabase.child("users").child(userID).child("firstName").setValue(fname);
+        //mDatabase.child("users").child(userID).child("lastName").setValue(lname);
+        //mDatabase.child("users").child(userID).child("gender").setValue(gender);
 
     }
 
@@ -88,35 +158,9 @@ public class EditProfile extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 111 && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            Uri filePath = data.getData();
+            filePath = data.getData();
 
-            try {
-                StorageReference avatarRef = storageRef.child("images/" + userID + ".png");
 
-                UploadTask uploadTask = avatarRef.putFile(filePath);
-
-                uploadTask.addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle unsuccessful uploads
-                        Toast.makeText(EditProfile.this, "Image upload failure", Toast.LENGTH_SHORT).show();
-                    }
-                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                        @SuppressWarnings("VisibleForTests") String downloadUrl = taskSnapshot.getDownloadUrl().toString();
-
-                        mDatabase.child("users").child(userID).child("imageURL").setValue(downloadUrl);
-
-                        Toast.makeText(EditProfile.this, "Image upload success", Toast.LENGTH_SHORT).show();
-
-                    }
-                });
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 
