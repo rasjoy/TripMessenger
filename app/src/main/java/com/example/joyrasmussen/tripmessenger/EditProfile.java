@@ -64,6 +64,7 @@ public class EditProfile extends AppCompatActivity {
         user = FirebaseAuth.getInstance().getCurrentUser();
         userReference = mDatabase.child("users");
         userID = user.getUid();
+        userObject = new User();
         userReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -72,7 +73,14 @@ public class EditProfile extends AppCompatActivity {
                     userObject = dataSnapshot.child(userID).getValue(User.class);
                     //populate the edit text here
 
+                    fnameET.setText(userObject.getFirstName());
+                    lnameET.setText(userObject.getLastName());
+                    genderET.setText(userObject.getGender());
+
                     //use the setimage method to populate image
+                    String imageURL = userObject.getImageURL();
+
+                    setImage(imageURL);
                 }else {
 
                 }
@@ -82,12 +90,9 @@ public class EditProfile extends AppCompatActivity {
 
             }
         });
-        userObject = new User();
 
-        //put code here to auto-fill first name, last name, gender if they are already set
 
     }
-
 
     public void update(View v) {
 
@@ -116,9 +121,10 @@ public class EditProfile extends AppCompatActivity {
                     @SuppressWarnings("VisibleForTests") String downloadUrl = taskSnapshot.getDownloadUrl().toString();
 
                     //mDatabase.child("users").child(userID).child("imageURL").setValue(downloadUrl);
-                    path = "images/" + userID + ".png";
-                    setImage(path);
-
+                    Log.i("image: ", downloadUrl);
+                    //path = "images/" + userID + ".png";
+                    setImage(downloadUrl);
+                    userObject.setImageURL(downloadUrl);
 
                 }
             });
@@ -126,7 +132,7 @@ public class EditProfile extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        userObject.setImageURL(path);
+
        userReference.child(userID).setValue(userObject);
         Toast.makeText(EditProfile.this, "Profile Successfully Updated", Toast.LENGTH_LONG).show();
         finish();
@@ -159,16 +165,18 @@ public class EditProfile extends AppCompatActivity {
     }
 
     public void setImage(String url){
-        Picasso.Builder builder = new Picasso.Builder(EditProfile.this);
-        builder.listener(new Picasso.Listener()
-        {
-            @Override
-            public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception)
-            {
-                exception.printStackTrace();
-                Log.i("uri: ", uri + "");
-            }
-        });
-        builder.build().load(url).into(image);
+
+        if(url != null && !url.equals("")) {
+
+            Picasso.Builder builder = new Picasso.Builder(EditProfile.this);
+            builder.listener(new Picasso.Listener() {
+                @Override
+                public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
+                    exception.printStackTrace();
+                    Log.i("uri: ", uri + "");
+                }
+            });
+            builder.build().load(url).into(image);
+        }
     }
 }
