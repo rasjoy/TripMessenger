@@ -23,4 +23,9 @@
     <string name="friends">Friends</string>
     <string name="pending">Pending</string>
     <string name="approve">Approve</string>
+    <string name="editTrip">Edit Trip</string>
+    <string name="enterChat">Enter Chatroom</string>
+    <string name="city">City:</string>
+    <string name="hintLocation">City, State</string>
+    <string name="changeTripImage">Change Trip Image</string>
 </resources>

@@ -10,20 +10,20 @@
     tools:layout_editor_absoluteY="8dp">
 
     <TextView
-        android:id="@+id/fNameProfileTv"
+        android:id="@+id/tripNameTVEditTrip"
         android:layout_width="91dp"
         android:layout_height="wrap_content"
         android:text="@string/firstName"
         android:textSize="18sp"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp"
-        android:layout_alignBaseline="@+id/fNameEditText"
-        android:layout_alignBottom="@+id/fNameEditText"
+        android:layout_alignBaseline="@+id/tripNameETEditTrip"
+        android:layout_alignBottom="@+id/tripNameETEditTrip"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
     <EditText
-        android:id="@+id/fNameEditText"
+        android:id="@+id/tripNameETEditTrip"
         android:layout_width="wrap_content"
         android:layout_height="43dp"
         android:ems="10"
@@ -42,22 +42,22 @@
         android:textSize="18sp"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp"
-        android:layout_alignBaseline="@+id/lNameEditText"
-        android:layout_alignBottom="@+id/lNameEditText"
+        android:layout_alignBaseline="@+id/locationETTripEdit"
+        android:layout_alignBottom="@+id/locationETTripEdit"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
     <EditText
-        android:id="@+id/lNameEditText"
+        android:id="@+id/locationETTripEdit"
         android:layout_width="wrap_content"
         android:layout_height="43dp"
         android:ems="10"
         android:inputType="textPersonName"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp"
-        android:layout_below="@+id/fNameEditText"
-        android:layout_alignLeft="@+id/fNameEditText"
-        android:layout_alignStart="@+id/fNameEditText" />
+        android:layout_below="@+id/tripNameETEditTrip"
+        android:layout_alignLeft="@+id/tripNameETEditTrip"
+        android:layout_alignStart="@+id/tripNameETEditTrip" />
 
     <TextView
         android:id="@+id/genderProfileTv"
@@ -68,7 +68,7 @@
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp"
         android:layout_marginTop="13dp"
-        android:layout_below="@+id/lNameEditText"
+        android:layout_below="@+id/locationETTripEdit"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -82,8 +82,8 @@
         tools:layout_editor_absoluteY="0dp"
         android:layout_alignBaseline="@+id/genderProfileTv"
         android:layout_alignBottom="@+id/genderProfileTv"
-        android:layout_alignLeft="@+id/lNameEditText"
-        android:layout_alignStart="@+id/lNameEditText" />
+        android:layout_alignLeft="@+id/locationETTripEdit"
+        android:layout_alignStart="@+id/locationETTripEdit" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -124,9 +124,9 @@
             android:layout_alignParentBottom="true"
             android:layout_marginLeft="0dp"
             android:layout_marginStart="0dp"
-            android:layout_toEndOf="@+id/fNameProfileTv"
+            android:layout_toEndOf="@+id/tripNameTVEditTrip"
 
-            android:layout_toRightOf="@+id/fNameProfileTv"
+            android:layout_toRightOf="@+id/tripNameTVEditTrip"
             android:layout_weight="1"
             android:onClick="cancel"
             android:text="@string/cancel" />

@@ -1,10 +1,7 @@
 package com.example.joyrasmussen.tripmessenger;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,9 +25,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
-
-import java.io.ByteArrayOutputStream;
-import java.util.UUID;
 
 public class EditProfile extends AppCompatActivity {
 
@@ -57,8 +51,8 @@ public class EditProfile extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
 
-        fnameET = (EditText) findViewById(R.id.fNameEditText);
-        lnameET = (EditText) findViewById(R.id.lNameEditText);
+        fnameET = (EditText) findViewById(R.id.tripNameETEditTrip);
+        lnameET = (EditText) findViewById(R.id.locationETTripEdit);
         genderET = (EditText) findViewById(R.id.genderProfileET);
         image = (ImageView) findViewById(R.id.imageView);
 

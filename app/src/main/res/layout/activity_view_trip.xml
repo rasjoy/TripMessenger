@@ -14,7 +14,24 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:text="TextView" />
+        android:text="trip name" />
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/buttonHolderTrip"
+        android:layout_below="@+id/memberTextViewTrip"
+        android:layout_weight="0.02" />
+
+    <TextView
+        android:id="@+id/memberTextViewTrip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/detailholderTripView"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="0.02"
+        android:text="@string/tripMembers" />
 
     <LinearLayout
         android:id="@+id/detailholderTripView"
@@ -71,41 +88,40 @@
 
         </RelativeLayout>
 
-        <TextView
-            android:id="@+id/memberTextViewTrip"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_weight="0.02"
-            android:text="@string/tripMembers" />
-
-        <android.support.v7.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.02" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.02"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/editTripButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Button" />
-
-            <Button
-                android:id="@+id/enterChatTripView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Button" />
-        </LinearLayout>
-
     </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/buttonHolderTrip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_weight="0.02">
+
+        <Button
+            android:id="@+id/editTripButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="54dp"
+            android:layout_marginRight="54dp"
+            android:layout_toLeftOf="@+id/enterChatTripView"
+            android:layout_toStartOf="@+id/enterChatTripView"
+            android:layout_weight="1"
+            android:text="@string/editTrip" />
+
+        <Button
+            android:id="@+id/enterChatTripView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
+            android:layout_marginEnd="27dp"
+            android:layout_marginRight="27dp"
+            android:layout_weight="1"
+            android:text="@string/enterChat" />
+    </RelativeLayout>
 
 </RelativeLayout>
