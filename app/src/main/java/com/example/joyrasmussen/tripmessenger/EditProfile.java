@@ -37,7 +37,7 @@ public class EditProfile extends AppCompatActivity {
     EditText fnameET, lnameET, genderET;
     ImageView image;
     User userObject;
-
+    Button update, cancel;
     String fname, lname, gender, userID, path;
 
     private DatabaseReference mDatabase, userReference;
@@ -45,13 +45,15 @@ public class EditProfile extends AppCompatActivity {
     FirebaseStorage storage;
     StorageReference storageRef;
     Uri filePath;
+    String imageURL;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
-
+        update = (Button) findViewById(R.id.updateProfileButton);
+        cancel = (Button) findViewById(R.id.cancelProfilebutton);
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
 
@@ -78,7 +80,7 @@ public class EditProfile extends AppCompatActivity {
                     genderET.setText(userObject.getGender());
 
                     //use the setimage method to populate image
-                    String imageURL = userObject.getImageURL();
+                    imageURL = userObject.getImageURL();
 
                     setImage(imageURL);
                 }else {
@@ -102,6 +104,8 @@ public class EditProfile extends AppCompatActivity {
         userObject.setFirstName(fname);
         userObject.setLastName(lname);
         userObject.setGender(gender);
+        update.setEnabled(false);
+        cancel.setEnabled(false);
         try {
 
             StorageReference avatarRef = storageRef.child("images/" + userID + ".png");
@@ -127,8 +131,14 @@ public class EditProfile extends AppCompatActivity {
 
                     Log.i("image: ", downloadUrl);
                     //path = "images/" + userID + ".png";
+                    path = downloadUrl;
                     setImage(downloadUrl);
-                    userObject.setImageURL(downloadUrl);
+                   userObject.setImageURL(downloadUrl);
+                    userReference.child(userID).setValue(userObject);
+
+                    userReference.child(userID).setValue(userObject);
+                    Toast.makeText(EditProfile.this, "Profile Successfully Updated", Toast.LENGTH_LONG).show();
+                    finish();
 
                 }
             });
@@ -136,13 +146,9 @@ public class EditProfile extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+       // Log.d("update: ", path);
+        //userObject.setImageURL(path);
 
-        userObject.setImageURL(path);
-         userReference.child(userID).setValue(userObject);
-
-       userReference.child(userID).setValue(userObject);
-        Toast.makeText(EditProfile.this, "Profile Successfully Updated", Toast.LENGTH_LONG).show();
-        finish();
         //mDatabase.child("users").child(userID).child("firstName").setValue(fname);
         //mDatabase.child("users").child(userID).child("lastName").setValue(lname);
         //mDatabase.child("users").child(userID).child("gender").setValue(gender);
@@ -162,6 +168,7 @@ public class EditProfile extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 111 && resultCode == RESULT_OK && data != null && data.getData() != null) {
             filePath = data.getData();
+           setImage(filePath.toString());
 
 
         }
