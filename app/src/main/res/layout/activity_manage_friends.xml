@@ -67,7 +67,7 @@
             android:layout_weight="1"
             android:text="@string/friends"
             android:textAlignment="center"
-            android:textColor="@color/authui_colorAccent"
+            android:textColor="@color/colorAccent"
             android:textSize="18sp" />
 
         <TextView

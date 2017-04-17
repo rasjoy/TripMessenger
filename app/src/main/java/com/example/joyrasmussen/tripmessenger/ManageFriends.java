@@ -35,7 +35,6 @@ import java.util.ListIterator;
 
 public class ManageFriends extends AppCompatActivity {
 
-    ArrayList<String> friends;
     ArrayList<String> pending;
     ArrayList<String> approval;
 
@@ -43,15 +42,23 @@ public class ManageFriends extends AppCompatActivity {
     User userObject;
     String userID;
 
-    private DatabaseReference mDatabase, userReference;
+    private DatabaseReference userReference;
     FirebaseUser user;
+    DatabaseReference dbRef;
 
     ListView listView;
 
     TextView friendsTab, approveTab, pendingTab;
 
-    FirebaseListAdapter<User> adapter;
+    //    FirebaseListAdapter<User> adapter;
+    ArrayList<String> pendingPeople;
+    ArrayList<String> pendingPeopleIDs;
+    ArrayList<String> approvePeople;
+    ArrayList<String> approvePeopleIDs;
+    ArrayList<String> friends;
+    ArrayList<String> friendIDs;
 
+    ArrayAdapter adapter;
     String currentView;
 
     @Override
@@ -59,7 +66,12 @@ public class ManageFriends extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_friends);
 
-        currentView = "friends";
+        pendingPeople = new ArrayList<String>();
+        pendingPeopleIDs = new ArrayList<String>();
+        approvePeople = new ArrayList<String>();
+        approvePeopleIDs = new ArrayList<String>();
+        friends = new ArrayList<String>();
+        friendIDs = new ArrayList<String>();
 
         friendsTab = (TextView) findViewById(R.id.friendsTab);
         pendingTab = (TextView) findViewById(R.id.pendingTab);
@@ -68,26 +80,12 @@ public class ManageFriends extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.friendsListView);
 
         friendName = (EditText) findViewById(R.id.addFriendET);
-        mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        dbRef = FirebaseDatabase.getInstance().getReference();
         user = FirebaseAuth.getInstance().getCurrentUser();
         userObject = new User();
         userID = user.getUid();
-        userReference = mDatabase.child("users");
-
-        userReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.hasChild(user.getUid())) {
-                    userObject = dataSnapshot.child(userID).getValue(User.class);
-
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        userReference = dbRef.child("users");
 
         View.OnClickListener tabClick = new View.OnClickListener() {
             @Override
@@ -96,31 +94,166 @@ public class ManageFriends extends AppCompatActivity {
                 changeTabs(v.getText().toString());
             }
         };
+
         friendsTab.setOnClickListener(tabClick);
         approveTab.setOnClickListener(tabClick);
         pendingTab.setOnClickListener(tabClick);
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users");
 
-        adapter = new FirebaseListAdapter<User>(this, User.class, android.R.layout.simple_list_item_1, ref) {
+        currentView = "Friends";
+        setFriends();
+
+    }
+
+    public void setFriends(){
+
+        if (currentView.equals("Friends")) {
+            adapter = new ArrayAdapter<String>(ManageFriends.this, android.R.layout.simple_list_item_1, friends);
+            adapter.setNotifyOnChange(true);
+            listView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+        }
+
+        final DatabaseReference approveRef = dbRef.child("friends").child(userID);
+
+        approveRef.addValueEventListener(new ValueEventListener() {
             @Override
-            protected void populateView(View view, User user, int position) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
 
-                ((TextView)view.findViewById(android.R.id.text1)).setText(user.getFullName());
+                for (DataSnapshot thisSnapshot : dataSnapshot.getChildren()) {
+
+                    if (!friendIDs.contains(thisSnapshot.getKey())) {
+                        friendIDs.add(thisSnapshot.getKey());
+                    }
+
+                    userReference.child(thisSnapshot.getKey()).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot ds) {
+
+                            User userObject = ds.getValue(User.class);
+                            String name = userObject.getFullName().replace(" ", "");
+                            if (!friends.contains(name)) {
+                                friends.add(name);
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
 
             }
-        };
 
-        listView.setAdapter(adapter);
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
+            }
+        });
+    }
+
+    public void setApprove() {
+
+        if (currentView.equals("Approve")) {
+            adapter = new ArrayAdapter<String>(ManageFriends.this, android.R.layout.simple_list_item_1, approvePeople);
+            adapter.setNotifyOnChange(true);
+            listView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+        }
+
+        final DatabaseReference approveRef = dbRef.child("approval").child(userID);
+
+        approveRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot thisSnapshot : dataSnapshot.getChildren()) {
+
+                    if (!approvePeopleIDs.contains(thisSnapshot.getKey())) {
+                        approvePeopleIDs.add(thisSnapshot.getKey());
+                    }
+
+                    userReference.child(thisSnapshot.getKey()).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot ds) {
+
+                            User userObject = ds.getValue(User.class);
+                            String name = userObject.getFullName().replace(" ", "");
+                            if (!approvePeople.contains(name)) {
+                                approvePeople.add(name);
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void setPending() {
+
+        if (currentView.equals("Pending")) {
+            adapter = new ArrayAdapter<String>(ManageFriends.this, android.R.layout.simple_list_item_1, pendingPeople);
+            adapter.setNotifyOnChange(true);
+            listView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+        }
+
+        DatabaseReference pendingRef = dbRef.child("pending").child(userID);
+
+        pendingRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot thisSnapshot : dataSnapshot.getChildren()) {
+
+                    if (!pendingPeopleIDs.contains(thisSnapshot.getKey())) {
+                        pendingPeopleIDs.add(thisSnapshot.getKey());
+                    }
+
+                    userReference.child(thisSnapshot.getKey()).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot ds) {
+                            User userObject = ds.getValue(User.class);
+                            String name = userObject.getFullName().replace(" ", "");
+                            if (!pendingPeople.contains(name)) {
+                                pendingPeople.add(name);
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        adapter.cleanup();
     }
-
 
     public void add(View v) {
 
@@ -134,10 +267,10 @@ public class ManageFriends extends AppCompatActivity {
                 for (DataSnapshot thisSnapshot : dataSnapshot.getChildren()) {
 
                     //put this user's ID in their friend's approval stuff
-                    mDatabase.child("approval").child(thisSnapshot.getKey()).child(userID).setValue("true");
+                    dbRef.child("approval").child(thisSnapshot.getKey()).child(userID).setValue("true");
 
                     //put the friends ID in this user's pending stuff
-                    mDatabase.child("pending").child(userID).child(thisSnapshot.getKey()).setValue("true");
+                    dbRef.child("pending").child(userID).child(thisSnapshot.getKey()).setValue("true");
 
                     Toast.makeText(ManageFriends.this, "Friend request sent", Toast.LENGTH_SHORT).show();
                     friendName.setText("");
@@ -152,32 +285,35 @@ public class ManageFriends extends AppCompatActivity {
 
     }
 
-    public void search(View v){
+    public void search(View v) {
 
         Intent i = new Intent(this, FindFriends.class);
         startActivity(i);
     }
 
-    public void changeTabs(String choice){
+    public void changeTabs(String choice) {
 
         switch (choice) {
             case "Friends":
                 currentView = "Friends";
-                friendsTab.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.authui_colorAccent));
+                setFriends();
+                friendsTab.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
                 pendingTab.setTextColor(Color.BLACK);
                 approveTab.setTextColor(Color.BLACK);
 
                 break;
             case "Pending":
                 currentView = "Pending";
-                pendingTab.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.authui_colorAccent));
+                setPending();
+                pendingTab.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
                 friendsTab.setTextColor(Color.BLACK);
                 approveTab.setTextColor(Color.BLACK);
 
                 break;
             case "Approve":
                 currentView = "Approve";
-                approveTab.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.authui_colorAccent));
+                setApprove();
+                approveTab.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
                 friendsTab.setTextColor(Color.BLACK);
                 pendingTab.setTextColor(Color.BLACK);
 
