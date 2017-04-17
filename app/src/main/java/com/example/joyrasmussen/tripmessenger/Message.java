@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class Message {
     long  time;
     String text, usrId, id, imageURL;
-    ArrayList<String> deletedByUsers;
+
 
     public Message(long time, String text, String usrId, String id, String imageURL) {
         this.time = time;
@@ -17,7 +17,7 @@ public class Message {
         this.usrId = usrId;
         this.id = id;
         this.imageURL = imageURL;
-        deletedByUsers = new ArrayList<>();
+
     }
 
     public long getTime() {
@@ -60,11 +60,4 @@ public class Message {
         this.imageURL = imageURL;
     }
 
-    public ArrayList<String> getDeletedByUsers() {
-        return deletedByUsers;
-    }
-
-    public void updateDeletedByUsers(String users) {
-        this.deletedByUsers.add(users);
-    }
 }

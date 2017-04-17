@@ -76,6 +76,7 @@
         android:layout_marginBottom="110dp"
         android:onClick="uploadTripImage"
         android:text="@string/changeTripImage"
+        android:textSize="12sp"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp" />
 

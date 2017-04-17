@@ -50,7 +50,7 @@ public class ViewTripActivity extends AppCompatActivity {
     String tripID;
     ValueEventListener tripListener;
     ValueEventListener memberListener;
-    Collection<Object> whoIsAMember;
+    ArrayList<String> whoIsAMember;
     boolean isOwner;
     DatabaseReference membersReference;
     FirebaseRecyclerAdapter<User, UserPopulateHolder> mAdapter;
@@ -181,8 +181,8 @@ public class ViewTripActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 whoIsAMember.clear();
-                    Map<String, Object> td = (HashMap<String,Object>) dataSnapshot.getValue();
-                    whoIsAMember = td.values();
+                    Map<String, Boolean> td = (HashMap<String,Boolean>) dataSnapshot.getValue();
+                    whoIsAMember = (ArrayList<String>) td.keySet();
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {

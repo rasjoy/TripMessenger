@@ -9,8 +9,11 @@
         android:id="@+id/detailLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true">
+
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+       >
 
         <ImageView
             android:id="@+id/tripImage"
@@ -18,35 +21,104 @@
             android:layout_height="100dp"
             app:srcCompat="@drawable/cast_abc_scrubber_control_to_pressed_mtrl_000" />
 
-        <TextView
-            android:id="@+id/tripName"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="103dp"
-            android:layout_marginStart="103dp"
+            android:layout_below="@+id/nameHeaderHolder"
             android:layout_toRightOf="@+id/tripImage"
-            android:text="@string/tripName" />
+            android:layout_alignParentRight="true"
+            android:layout_weight="1"
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/tripLocation"
+            <TextView
+                android:id="@+id/tripLocationChatHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.07"
+                android:text="@string/loaction" />
+
+            <TextView
+                android:id="@+id/tripLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/tripName"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/tripImage"
+                android:layout_weight="1"
+                android:text="TextView" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nameHeaderHolder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_below="@+id/tripName"
             android:layout_toRightOf="@+id/tripImage"
-            android:text="TextView" />
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tripName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tripName" />
+
+            <TextView
+                android:id="@+id/chatTripName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:text="TextView" />
+
+        </LinearLayout>
+
     </RelativeLayout>
 
-    <RelativeLayout
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/chatRoomRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/messageLayout"
+        android:layout_below="@+id/detailLayout"
+        android:layout_centerHorizontal="true"/>
+
+    <LinearLayout
+        android:id="@+id/messageLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
 
-    </RelativeLayout>
+        <EditText
+            android:id="@+id/messageEditTextChat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.05"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="@string/post" />
+
+        <ImageButton
+            android:id="@+id/sendButtonChat"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@+id/galleryChatButton"
+            android:layout_weight="0.05"
+            android:onClick="onSentMessage"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/send" />
+
+        <ImageButton
+            android:id="@+id/galleryChatButton"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_weight="0.02"
+            android:onClick="onGalleryListener"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/gallery" />
+    </LinearLayout>
+
 </RelativeLayout>
