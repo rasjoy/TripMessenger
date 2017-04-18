@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -29,6 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -52,14 +55,13 @@ public class ManageFriends extends AppCompatActivity {
 
     //    FirebaseListAdapter<User> adapter;
     ArrayList<String> pendingPeople;
-    ArrayList<String> pendingPeopleIDs;
     ArrayList<String> approvePeople;
-    ArrayList<String> approvePeopleIDs;
     ArrayList<String> friends;
-    ArrayList<String> friendIDs;
 
     ArrayAdapter adapter;
     String currentView;
+
+    HashMap<String, String> peopleToIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,11 +69,9 @@ public class ManageFriends extends AppCompatActivity {
         setContentView(R.layout.activity_manage_friends);
 
         pendingPeople = new ArrayList<String>();
-        pendingPeopleIDs = new ArrayList<String>();
         approvePeople = new ArrayList<String>();
-        approvePeopleIDs = new ArrayList<String>();
         friends = new ArrayList<String>();
-        friendIDs = new ArrayList<String>();
+        peopleToIds = new HashMap<String, String>();
 
         friendsTab = (TextView) findViewById(R.id.friendsTab);
         pendingTab = (TextView) findViewById(R.id.pendingTab);
@@ -99,19 +99,56 @@ public class ManageFriends extends AppCompatActivity {
         approveTab.setOnClickListener(tabClick);
         pendingTab.setOnClickListener(tabClick);
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Toast.makeText(ManageFriends.this, "placeholder", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         currentView = "Friends";
         setFriends();
 
     }
 
-    public void setFriends(){
+    public void setFriends() {
 
         if (currentView.equals("Friends")) {
             adapter = new ArrayAdapter<String>(ManageFriends.this, android.R.layout.simple_list_item_1, friends);
             adapter.setNotifyOnChange(true);
             listView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
+
+            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int index, long l) {
+
+                    new AlertDialog.Builder(ManageFriends.this)
+                            .setMessage("Delete friend?")
+                            .setCancelable(false)
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+
+                                    String id = peopleToIds.get(friends.get(index));
+                                    dbRef.child("friends").child(userID).child(id).removeValue();
+                                    dbRef.child("friends").child(id).child(userID).removeValue();
+
+                                    friends.remove(index);
+                                    adapter.notifyDataSetChanged();
+
+                                }
+                            })
+                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }
+                            }).create().show();
+
+                    return true;
+                }
+            });
         }
 
         final DatabaseReference approveRef = dbRef.child("friends").child(userID);
@@ -120,12 +157,7 @@ public class ManageFriends extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                for (DataSnapshot thisSnapshot : dataSnapshot.getChildren()) {
-
-                    if (!friendIDs.contains(thisSnapshot.getKey())) {
-                        friendIDs.add(thisSnapshot.getKey());
-                    }
-
+                for (final DataSnapshot thisSnapshot : dataSnapshot.getChildren()) {
                     userReference.child(thisSnapshot.getKey()).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot ds) {
@@ -135,6 +167,10 @@ public class ManageFriends extends AppCompatActivity {
                             if (!friends.contains(name)) {
                                 friends.add(name);
                                 adapter.notifyDataSetChanged();
+                            }
+
+                            if (!peopleToIds.containsKey(name)) {
+                                peopleToIds.put(name, thisSnapshot.getKey());
                             }
                         }
 
@@ -169,11 +205,8 @@ public class ManageFriends extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                for (DataSnapshot thisSnapshot : dataSnapshot.getChildren()) {
+                for (final DataSnapshot thisSnapshot : dataSnapshot.getChildren()) {
 
-                    if (!approvePeopleIDs.contains(thisSnapshot.getKey())) {
-                        approvePeopleIDs.add(thisSnapshot.getKey());
-                    }
 
                     userReference.child(thisSnapshot.getKey()).addValueEventListener(new ValueEventListener() {
                         @Override
@@ -185,6 +218,11 @@ public class ManageFriends extends AppCompatActivity {
                                 approvePeople.add(name);
                                 adapter.notifyDataSetChanged();
                             }
+                            if (!peopleToIds.containsKey(name)) {
+                                peopleToIds.put(name, thisSnapshot.getKey());
+                            }
+
+
                         }
 
                         @Override
@@ -210,6 +248,13 @@ public class ManageFriends extends AppCompatActivity {
             adapter.setNotifyOnChange(true);
             listView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
+
+            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    return true; //Necessary
+                }
+            });
         }
 
         DatabaseReference pendingRef = dbRef.child("pending").child(userID);
@@ -218,11 +263,7 @@ public class ManageFriends extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                for (DataSnapshot thisSnapshot : dataSnapshot.getChildren()) {
-
-                    if (!pendingPeopleIDs.contains(thisSnapshot.getKey())) {
-                        pendingPeopleIDs.add(thisSnapshot.getKey());
-                    }
+                for (final DataSnapshot thisSnapshot : dataSnapshot.getChildren()) {
 
                     userReference.child(thisSnapshot.getKey()).addValueEventListener(new ValueEventListener() {
                         @Override
@@ -232,6 +273,9 @@ public class ManageFriends extends AppCompatActivity {
                             if (!pendingPeople.contains(name)) {
                                 pendingPeople.add(name);
                                 adapter.notifyDataSetChanged();
+                            }
+                            if (!peopleToIds.containsKey(name)) {
+                                peopleToIds.put(name, thisSnapshot.getKey());
                             }
                         }
 
