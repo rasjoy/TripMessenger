@@ -40,15 +40,10 @@ public class UserPopulateHolder extends RecyclerView.ViewHolder {
 
         if(url != null && !url.equals("")) {
 
-            Picasso.Builder builder = new Picasso.Builder(image.getContext());
-            builder.listener(new Picasso.Listener() {
-                @Override
-                public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
-                    exception.printStackTrace();
-                    Log.i("uri: ", uri + "");
-                }
-            });
-            builder.build().load(url).into(image);
+            Picasso.with(image.getContext()).load(url).into(image);
+        }
+        else{
+            image.setVisibility(View.GONE);
         }
     }
 }

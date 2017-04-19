@@ -111,28 +111,47 @@ public class ChatRoom extends AppCompatActivity {
                 ChatPostHolder.class, query) {
             @Override
             protected void populateViewHolder(final ChatPostHolder viewHolder, final Message model, int position) {
+                viewHolder.setImage(model.getImageURL());
+                viewHolder.setPost(model.getText());
+                viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        deleteReference.child(model.getId()).setValue(true);
+                        mAdapter.notifyDataSetChanged();
+                        return false;
+                    }
+                });
                deleteReference.child(model.getId()).addValueEventListener(new ValueEventListener() {
                    @Override
                    public void onDataChange(DataSnapshot dataSnapshot) {
                         if(!dataSnapshot.child(currentUser.getId()).exists()){
-                            viewHolder.setImage(model.getImageURL());
+
                             //viewHolder.setUser(mode);
 
-                            viewHolder.setPost(model.getText());
                             try {
                                 viewHolder.setTime(model.getTime());
                             } catch (ParseException e) {
                                 e.printStackTrace();
                             }
+                           if(model.getId().equals(currentUser.getId())){
+                               viewHolder.setUser(currentUser.getFirstName() + " " + currentUser.getLastName());
 
-                            viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                                @Override
-                                public boolean onLongClick(View v) {
-                                    deleteReference.child(model.getId()).setValue(true);
-                                    mAdapter.notifyDataSetChanged();
-                                    return false;
-                                }
-                            });
+                           }else{
+                               userReference.child(model.getUsrId()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                   @Override
+                                   public void onDataChange(DataSnapshot dataSnapshot) {
+                                       User thisUser = dataSnapshot.getValue(User.class);
+                                       viewHolder.setUser(thisUser.getFirstName() + " " + thisUser.getLastName());
+                                   }
+
+                                   @Override
+                                   public void onCancelled(DatabaseError databaseError) {
+
+                                   }
+                               });
+
+                           }
+
                         }
                    }
 
@@ -141,8 +160,6 @@ public class ChatRoom extends AppCompatActivity {
 
                    }
                });
-
-
             }
         };
 
@@ -166,6 +183,7 @@ public class ChatRoom extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         authListener();
+        mAuth.addAuthStateListener(mAuthListener);
         ValueEventListener listen = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

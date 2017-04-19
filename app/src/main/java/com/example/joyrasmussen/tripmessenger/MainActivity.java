@@ -1,8 +1,6 @@
 package com.example.joyrasmussen.tripmessenger;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -23,9 +21,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.Arrays;
-
-public class MainActivity extends AppCompatActivity implements SignInFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements SignInFragment.OnFragmentInteractionListener, UserFragment.OnFragmentInteractionListener, UserRetrival {
     FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     FirebaseUser user;
@@ -54,6 +50,10 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if(dataSnapshot.hasChild(user.getUid())){
                                 Log.d( "onDataChange: ", "user is in database");
+                                getSupportFragmentManager().beginTransaction()
+                                        .replace(R.id.main_activity, new UserFragment(), "user")
+                                        .addToBackStack(null).commit();
+
 
                             }else {
                                 Toast.makeText(MainActivity.this, "Please complete your profile", Toast.LENGTH_LONG).show();
@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
                                 }
                             }
                         });
+                getSupportFragmentManager().popBackStack();
 
                 return true;
             case R.id.mangageFriendsMain:
@@ -144,6 +145,13 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
 
 
     }
+    public String returnUserID(){
+        return user.getUid();
 
+    }
+    public FirebaseUser returnFUser(){
+        return user;
+
+    }
 
 }

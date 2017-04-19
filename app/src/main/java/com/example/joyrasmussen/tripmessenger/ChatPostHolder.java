@@ -1,5 +1,6 @@
 package com.example.joyrasmussen.tripmessenger;
 
+import android.content.Context;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -50,16 +51,8 @@ public class ChatPostHolder extends RecyclerView.ViewHolder{
     public void setImage(String url){
 
         if(url != null && !url.equals("")) {
+        Picasso.with(image.getContext()).load(url).into(image);
 
-            Picasso.Builder builder = new Picasso.Builder(image.getContext());
-            builder.listener(new Picasso.Listener() {
-                @Override
-                public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
-                    exception.printStackTrace();
-                    Log.i("uri: ", uri + "");
-                }
-            });
-            builder.build().load(url).into(image);
         }else{
             imageLayout.setVisibility(View.GONE);
         }

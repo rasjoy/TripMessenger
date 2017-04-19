@@ -6,6 +6,9 @@
         android:id="@+id/edtiTripView"
         android:title="@string/editTrip" />
     <item
+        android:id="@+id/leaveTripMenu"
+        android:title="@string/leaveChat" />
+    <item
         android:id="@+id/goToChatMenuTrip"
         android:title="@string/enterChat" />
     <item

@@ -30,4 +30,6 @@
     <string name="changeTripImage">Change Trip Image</string>
     <string name="owner">Owner:</string>
     <string name="post">Post .....</string>
+    <string name="leaveChat">Leave Trip</string>
+    <string name="userProfilePicture">User Profile Picture</string>
 </resources>
