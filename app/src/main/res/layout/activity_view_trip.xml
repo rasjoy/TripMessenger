@@ -2,11 +2,15 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/viewTrip"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.joyrasmussen.tripmessenger.ViewTripActivity">
 
-
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/elements">
     <TextView
         android:id="@+id/tripNameViewTrip"
         android:layout_width="match_parent"
@@ -88,26 +92,25 @@
             android:layout_weight="1.01">
 
 
+            <TextView
+                android:id="@+id/locationheaderTripView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/loaction" />
 
-                <TextView
-                    android:id="@+id/locationheaderTripView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/loaction" />
-
-                <TextView
-                    android:id="@+id/locationTripView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginLeft="13dp"
-                    android:layout_marginStart="13dp"
-                    android:layout_toEndOf="@+id/locationheaderTripView"
-                    android:layout_toRightOf="@+id/locationheaderTripView"
-                    android:layout_weight="1"
-                    android:text="TextView" />
+            <TextView
+                android:id="@+id/locationTripView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="13dp"
+                android:layout_marginStart="13dp"
+                android:layout_toEndOf="@+id/locationheaderTripView"
+                android:layout_toRightOf="@+id/locationheaderTripView"
+                android:layout_weight="1"
+                android:text="TextView" />
 
         </RelativeLayout>
 
@@ -136,5 +139,5 @@
             android:onClick="onChatActivity"
             android:text="@string/enterChat" />
     </LinearLayout>
-
+</RelativeLayout>
 </RelativeLayout>

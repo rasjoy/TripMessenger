@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.fitness.data.Value;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -35,7 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ViewTripActivity extends AppCompatActivity {
+public class ViewTripActivity extends AppCompatActivity implements UserFragment.OnFragmentInteractionListener,  UserRetrival{
     FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     FirebaseUser user;
@@ -57,6 +58,7 @@ public class ViewTripActivity extends AppCompatActivity {
     DatabaseReference membersReference;
     FirebaseRecyclerAdapter<User, UserPopulateHolder> mAdapter;
     Query query;
+    String viewUser;
 
 
 
@@ -81,6 +83,7 @@ public class ViewTripActivity extends AppCompatActivity {
         tripReference = mDatabase.child("trips").child(tripID);
         membersReference = mDatabase.child("tripMembers").child(tripID);
         userReference = mDatabase.child("users");
+        findViewById(R.id.elements).setVisibility(View.VISIBLE);
 
 
 
@@ -89,21 +92,43 @@ public class ViewTripActivity extends AppCompatActivity {
 
 
         populateImage(thisTrip.getPhoto());
+
+
+
+
+    }
+    public void populateList(){
         query = userReference.orderByKey();
         mAdapter = new FirebaseRecyclerAdapter<User, UserPopulateHolder>(User.class, R.layout.trip_members, UserPopulateHolder.class, query) {
             @Override
-            protected void populateViewHolder(UserPopulateHolder viewHolder, User model, int position) {
+            protected void populateViewHolder(UserPopulateHolder viewHolder, final User model, int position) {
+
                 Log.d( "populateViewHolder: ", whoIsAMember.toString() + "\n " + model.getId());
-                if(whoIsAMember.contains(model.getId())){
+                if(whoIsAMember.contains(model.getId())) {
+                    Log.d("whoIsMember ", model.toString());
+                    viewHolder.layout.setVisibility(View.VISIBLE);
                     viewHolder.isPart(model.getFirstName(), model.getLastName(), model.getImageURL());
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent intent = new Intent(ViewTripActivity.this, ChatRoom.class);
-                            intent.putExtra("tripID", tripID);
-                            startActivity(intent);
+                            viewUser = model.getId();
+                            findViewById(R.id.elements).setVisibility(View.INVISIBLE);
+                            getSupportFragmentManager().beginTransaction()
+                                        .replace(R.id.viewTrip, new UserFragment(), "user")
+                                        .addToBackStack(null).commit();
+
                         }
                     });
+
+
+
+                }else{
+                    RecyclerView.LayoutParams param = (RecyclerView.LayoutParams)viewHolder.itemView.getLayoutParams();
+                    param.width = 0;
+                    param.height = 0;
+                    viewHolder.itemView.setLayoutParams(param);
+
+
                 }
             }
         };
@@ -112,9 +137,7 @@ public class ViewTripActivity extends AppCompatActivity {
         members.setLayoutManager(mLayoutManager);
         members.setAdapter(mAdapter);
 
-
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -146,9 +169,23 @@ public class ViewTripActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
+        findViewById(R.id.elements).setVisibility(View.VISIBLE);
         authListener();
         auth.addAuthStateListener(mAuthListener);
         super.onStart();
+
+        ValueEventListener userListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        userReference.addValueEventListener(userListener);
         ValueEventListener listen= new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -156,16 +193,16 @@ public class ViewTripActivity extends AppCompatActivity {
 
                 location.setText(thisTrip.getLocation());
                 name.setText(thisTrip.getName());
-                String creator =thisTrip.getCreator();
+                final String creator =thisTrip.getCreator();
                 if(creator.equals(user.getUid())){
                     owner.setText("You");
                     isOwner = true;
                 }else{
 
-                    userReference.child(creator).addListenerForSingleValueEvent(new ValueEventListener() {
+                    userReference.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            User creater = dataSnapshot.getValue(User.class);
+                            User creater = dataSnapshot.child(creator).getValue(User.class);
                             owner.setText(creater.getFirstName() + " " + creater.getLastName());
                             isOwner= false;
                         }
@@ -176,7 +213,9 @@ public class ViewTripActivity extends AppCompatActivity {
                     });
 
                 }
-                populateEverything();
+               if(!whoIsAMember.isEmpty()){
+                   populateEverything();
+               }
             }
 
             @Override
@@ -189,10 +228,13 @@ public class ViewTripActivity extends AppCompatActivity {
         ValueEventListener listenMembers = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                whoIsAMember.clear();
+
                     Map<String, Boolean> td = (HashMap<String,Boolean>) dataSnapshot.getValue();
+               // Log.d("members", td.toString());
                    if(td != null){
                        whoIsAMember = Arrays.asList(td.keySet().toArray());
+                       Log.d("Memebers", whoIsAMember.toString());
+                       populateList();
                    }
             }
             @Override
@@ -203,6 +245,14 @@ public class ViewTripActivity extends AppCompatActivity {
         membersReference.addValueEventListener(listenMembers);
         memberListener = listenMembers;
 
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        findViewById(R.id.elements).setVisibility(View.VISIBLE);
     }
 
     private void authListener(){
@@ -241,7 +291,19 @@ public class ViewTripActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        if(memberListener != null){
+            membersReference.removeEventListener(memberListener);
+        }
         if(tripListener != null){
+            tripReference.removeEventListener(tripListener);
+        }
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(memberListener != null){
             membersReference.removeEventListener(memberListener);
         }
         if(tripListener != null){
@@ -251,7 +313,7 @@ public class ViewTripActivity extends AppCompatActivity {
 
     public void onChatActivity(View v){
         Intent intent = new Intent(ViewTripActivity.this, ChatRoom.class);
-        intent.putExtra("tripID", tripID);
+        intent.putExtra("chatID", tripID);
         startActivity(intent);
    }
 
@@ -260,5 +322,40 @@ public class ViewTripActivity extends AppCompatActivity {
        intent.putExtra("tripID", tripID);
        startActivity(intent);
    }
+    public String returnUserID(){
+        return viewUser;
 
+    }
+    public FirebaseUser returnFUser(){
+        return user;
+
+    }
+
+    public void tryToGetMembersagain(){
+        membersReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Map<String, Boolean> td = (HashMap<String,Boolean>) dataSnapshot.getValue();
+                // Log.d("members", td.toString());
+                if(td != null) {
+                    whoIsAMember = Arrays.asList(td.keySet().toArray());
+                    Log.d("Memebers", whoIsAMember.toString());
+
+                }
+
+                }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        findViewById(R.id.elements).setVisibility(View.VISIBLE);
+    }
 }

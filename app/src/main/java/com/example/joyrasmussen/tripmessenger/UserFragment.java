@@ -129,7 +129,7 @@ public class UserFragment extends Fragment {
             protected void populateViewHolder(TripHolder viewHolder, final Trip model, int position) {
                 final DatabaseReference savedRef = getRef(position);
                 final String key = savedRef.getKey();
-
+                viewHolder.setImage(model.getPhoto());
 
                 if(user.getUid().equals( model.getCreator())){
                     viewHolder.setColor();

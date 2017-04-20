@@ -53,6 +53,7 @@ public class ChatRoom extends AppCompatActivity {
     private FirebaseAuth mAuth;
     Trip thisTrip;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    LinearLayoutManager mLayoutManager;
 
 
 
@@ -60,7 +61,7 @@ public class ChatRoom extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
-        chatID = getIntent().getStringExtra("ChatID");
+        chatID = getIntent().getStringExtra("chatID");
         populate();
 
     }
@@ -71,6 +72,7 @@ public class ChatRoom extends AppCompatActivity {
         message = (EditText) findViewById(R.id.messageEditTextChat);
         image = (ImageView) findViewById(R.id.tripImage);
         name = (TextView) findViewById(R.id.chatTripName);
+        postRecycler = (RecyclerView) findViewById(R.id.chatRoomRecycler);
         location = (TextView) findViewById(R.id.tripLocation);
         deleteReference = mDatabase.child("deleteChats");
         userReference = mDatabase.child("users");
@@ -163,9 +165,9 @@ public class ChatRoom extends AppCompatActivity {
             }
         };
 
-        //mLayoutManager = new LinearLayoutManager(this);
+        mLayoutManager = new LinearLayoutManager(this);
         postRecycler.setHasFixedSize(false);
-       // postRecycler.setLayoutManager(mLayoutManager);
+        postRecycler.setLayoutManager(mLayoutManager);
         postRecycler.setAdapter(mAdapter);
 
     }
