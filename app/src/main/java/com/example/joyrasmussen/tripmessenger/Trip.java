@@ -8,15 +8,21 @@ import java.util.HashMap;
  */
 
 public class Trip {
-    long id;
+    String id;
     String name;
     String location;
     String photo;
     String creator;
 
+    public Trip(String id) {
+        this.id = id;
+    }
 
+    public Trip() {
 
-    public Trip(long id, String name, String location, String photo, String creator) {
+    }
+
+    public Trip(String id, String name, String location, String photo, String creator) {
         this.id = id;
         this.name = name;
         this.location = location;
@@ -25,11 +31,11 @@ public class Trip {
 
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

@@ -66,7 +66,7 @@ public class ChatRoom extends AppCompatActivity {
     }
 
     private void populate(){
-        tripReference = mDatabase.child(chatID);
+        tripReference = mDatabase.child("trips").child(chatID);
         postReferences = mDatabase.child("chat").child(chatID);
         message = (EditText) findViewById(R.id.messageEditTextChat);
         image = (ImageView) findViewById(R.id.tripImage);

@@ -29,8 +29,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ViewTripActivity extends AppCompatActivity {
@@ -50,7 +52,7 @@ public class ViewTripActivity extends AppCompatActivity {
     String tripID;
     ValueEventListener tripListener;
     ValueEventListener memberListener;
-    ArrayList<String> whoIsAMember;
+    List<Object> whoIsAMember = new ArrayList<>();
     boolean isOwner;
     DatabaseReference membersReference;
     FirebaseRecyclerAdapter<User, UserPopulateHolder> mAdapter;
@@ -62,15 +64,12 @@ public class ViewTripActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_trip);
-
-        populateEverything();
-
-    }
-    private void populateEverything(){
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        whoIsAMember = new ArrayList<>();
+        tripID = getIntent().getStringExtra("tripID");
         auth = FirebaseAuth.getInstance();
-        authListener();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        auth = FirebaseAuth.getInstance();
+
         location = (TextView) findViewById(R.id.locationTripView);
         name = (TextView) findViewById(R.id.tripNameViewTrip);
         editTrip = (Button) findViewById(R.id.editTripButton);
@@ -78,14 +77,23 @@ public class ViewTripActivity extends AppCompatActivity {
         members = (RecyclerView) findViewById(R.id.tripMemberRecycler);
         owner = (TextView) findViewById(R.id.ownerETtripView);
         image = (ImageView) findViewById(R.id.tripViewImage);
-        tripID = getIntent().getStringExtra("tripID");
+
         tripReference = mDatabase.child("trips").child(tripID);
         membersReference = mDatabase.child("tripMembers").child(tripID);
+        userReference = mDatabase.child("users");
+
+
+
+    }
+    private void populateEverything(){
+
+
         populateImage(thisTrip.getPhoto());
         query = userReference.orderByKey();
         mAdapter = new FirebaseRecyclerAdapter<User, UserPopulateHolder>(User.class, R.layout.trip_members, UserPopulateHolder.class, query) {
             @Override
             protected void populateViewHolder(UserPopulateHolder viewHolder, User model, int position) {
+                Log.d( "populateViewHolder: ", whoIsAMember.toString() + "\n " + model.getId());
                 if(whoIsAMember.contains(model.getId())){
                     viewHolder.isPart(model.getFirstName(), model.getLastName(), model.getImageURL());
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -103,15 +111,13 @@ public class ViewTripActivity extends AppCompatActivity {
         members.setHasFixedSize(false);
         members.setLayoutManager(mLayoutManager);
         members.setAdapter(mAdapter);
+
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        if(!isOwner){
-            menu.getItem(R.id.edtiTripView).setVisible(false);
-
-        }
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.trip_view_menu, menu);
         return true;
@@ -140,21 +146,23 @@ public class ViewTripActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
+        authListener();
         auth.addAuthStateListener(mAuthListener);
         super.onStart();
         ValueEventListener listen= new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 thisTrip = dataSnapshot.getValue(Trip.class);
-                location.setText(thisTrip.getLocation());
-                String creator =thisTrip.getCreator();
-                if(creator.equals( tripID)){
-                        owner.setText("You");
-                    isOwner = true;
 
+                location.setText(thisTrip.getLocation());
+                name.setText(thisTrip.getName());
+                String creator =thisTrip.getCreator();
+                if(creator.equals(user.getUid())){
+                    owner.setText("You");
+                    isOwner = true;
                 }else{
-                    userReference = mDatabase.child("users").child(creator);
-                    userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                    userReference.child(creator).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             User creater = dataSnapshot.getValue(User.class);
@@ -168,6 +176,7 @@ public class ViewTripActivity extends AppCompatActivity {
                     });
 
                 }
+                populateEverything();
             }
 
             @Override
@@ -182,7 +191,9 @@ public class ViewTripActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 whoIsAMember.clear();
                     Map<String, Boolean> td = (HashMap<String,Boolean>) dataSnapshot.getValue();
-                    whoIsAMember = (ArrayList<String>) td.keySet();
+                   if(td != null){
+                       whoIsAMember = Arrays.asList(td.keySet().toArray());
+                   }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {

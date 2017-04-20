@@ -51,6 +51,7 @@ public class EditTripActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_trip);
+
         auth = FirebaseAuth.getInstance();
         authListener();
         tripID = getIntent().getStringExtra("tripID");
@@ -61,22 +62,26 @@ public class EditTripActivity extends AppCompatActivity {
         if(tripID.equals("") || tripID== null){
             tripID = UUID.randomUUID().toString();
         }
-        tripReference = mDatabase.child(tripID);
+        tripReference = mDatabase.child("trips");
 
 
         name = (EditText) findViewById(R.id.tripNameETEditTrip);
         location = (EditText) findViewById(R.id.locationETTripEdit);
         image = (ImageView) findViewById(R.id.imageTripEdit);
-        tripReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        tripReference.child(tripID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 thisTrip = dataSnapshot.getValue(Trip.class);
+                if (thisTrip != null) {
+                    name.setText(thisTrip.getName());
+                    if (thisTrip.getLocation() != null) {
+                        location.setText(thisTrip.getLocation());
+                    }
+                    setImage(thisTrip.getPhoto());
+                }else{
+                    thisTrip = new Trip(tripID);
 
-                name.setText(thisTrip.getName());
-                if(thisTrip.getLocation() != null){
-                    location.setText(thisTrip.getLocation());
                 }
-                setImage(thisTrip.getPhoto());
             }
 
             @Override
@@ -147,6 +152,23 @@ public class EditTripActivity extends AppCompatActivity {
     public void onEditListener(View v){
         thisTrip.setName(name.getText().toString());
         thisTrip.setLocation(location.getText().toString());
+        thisTrip.setCreator(user.getUid());
+        final DatabaseReference tripMembers =  mDatabase.child("tripMembers").child(tripID);
+        tripMembers.child(user.getUid()).setValue(true);
+        tripMembers.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String userz = dataSnapshot.child(user.getUid()).getKey();
+
+                Log.d( "onDataChange: ", "tripMembers" + userz);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         if(filePath != null) {
             try {
 
@@ -176,6 +198,11 @@ public class EditTripActivity extends AppCompatActivity {
                         setImage(downloadUrl);
                         thisTrip.setPhoto(downloadUrl);
                         tripReference.child(tripID).setValue(thisTrip);
+
+                        //Need to update join list here
+
+
+
                         Toast.makeText(EditTripActivity.this, "Trip Successfully Updated", Toast.LENGTH_LONG).show();
                         finish();
 
