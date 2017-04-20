@@ -47,6 +47,7 @@ public class EditTripActivity extends AppCompatActivity {
     String imageURL;
     String tripID;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +57,8 @@ public class EditTripActivity extends AppCompatActivity {
         authListener();
         tripID = getIntent().getStringExtra("tripID");
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
         populateViews();
     }
     public void populateViews(){
@@ -155,7 +158,7 @@ public class EditTripActivity extends AppCompatActivity {
         thisTrip.setCreator(user.getUid());
         final DatabaseReference tripMembers =  mDatabase.child("tripMembers").child(tripID);
         tripMembers.child(user.getUid()).setValue(true);
-        tripMembers.addValueEventListener(new ValueEventListener() {
+        /*tripMembers.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String userz = dataSnapshot.child(user.getUid()).getKey();
@@ -168,22 +171,17 @@ public class EditTripActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        });*/
+        Log.d( "onEditListener: ", filePath.toString() + "");
         if(filePath != null) {
             try {
 
-
-                StorageReference avatarRef = storageRef.child("imagesTrips/" + tripID  + ".png");
+                Log.d( "onEditListener: ", "uploading" + tripID);
+                StorageReference avatarRef = storageRef.child("tripimages/" + tripID  + ".png");
 
                 UploadTask uploadTask = avatarRef.putFile(filePath);
 
-                uploadTask.addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle unsuccessful uploads
-                        Toast.makeText(EditTripActivity.this, "Image upload failure", Toast.LENGTH_SHORT).show();
-                    }
-                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
@@ -192,10 +190,10 @@ public class EditTripActivity extends AppCompatActivity {
                         //mDatabase.child("users").child(userID).child("imageURL").setValue(downloadUrl);
 
 
-                        Log.i("image: ", downloadUrl);
+                        Log.d("image: ", downloadUrl);
                         //path = "images/" + userID + ".png";
 
-                        setImage(downloadUrl);
+                        //setImage(downloadUrl);
                         thisTrip.setPhoto(downloadUrl);
                         tripReference.child(tripID).setValue(thisTrip);
 
@@ -207,13 +205,21 @@ public class EditTripActivity extends AppCompatActivity {
                         finish();
 
                     }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                        Toast.makeText(EditTripActivity.this, "Image upload failure", Toast.LENGTH_SHORT).show();
+                    }
                 });
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }else{
+
            tripReference.child(tripID).setValue(thisTrip);
+            Toast.makeText(EditTripActivity.this, "Trip Successfully Updated", Toast.LENGTH_LONG).show();
             finish();
         }
 
