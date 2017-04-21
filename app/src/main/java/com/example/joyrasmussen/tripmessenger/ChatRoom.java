@@ -62,6 +62,7 @@ public class ChatRoom extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
         chatID = getIntent().getStringExtra("chatID");
+        mAuth = FirebaseAuth.getInstance();
         populate();
 
     }

@@ -21,13 +21,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class MainActivity extends AppCompatActivity implements SignInFragment.OnFragmentInteractionListener, UserFragment.OnFragmentInteractionListener, UserRetrival {
+public class MainActivity extends AppCompatActivity implements SignInFragment.OnFragmentInteractionListener,ViewTripFragment.OnFragmentInteractionListener, UserFragment.OnFragmentInteractionListener, UserRetrival, TripRetrival {
     FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     FirebaseUser user;
     DatabaseReference userReference;
     DatabaseReference tripReference;
     DatabaseReference mDatabase;
+    String usersViewing;
+    String tripID;
      static final int SIGN_IN = 123;
 
     @Override
@@ -145,13 +147,51 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
 
 
     }
+
+    @Override
+    public String returnTripID() {
+        return tripID;
+    }
+
     public String returnUserID(){
-        return user.getUid();
+        if(getFragmentManager().getBackStackEntryCount()== 0) {
+            return user.getUid();
+        }
+        else{
+            return usersViewing;
+        }
 
     }
     public FirebaseUser returnFUser(){
         return user;
 
     }
+
+    @Override
+    public void startTripFragment(String id) {
+        tripID = id;
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_activity, new ViewTripFragment(), "trip")
+                .addToBackStack(null).commit();
+    }
+
+
+
+    @Override
+    public String getUserID() {
+        return null;
+    }
+
+    @Override
+    public void startCLickedUserFragment(String id) {
+        usersViewing = id;
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_activity, new UserFragment(), "user")
+                .addToBackStack(null).commit();
+    }
+
+
+
+
 
 }

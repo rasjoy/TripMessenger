@@ -27,6 +27,8 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -52,6 +54,8 @@ public class UserFragment extends Fragment {
     RecyclerView recyclerView;
     FirebaseRecyclerAdapter<Trip, TripHolder> fireAdapter;
     Query query;
+    ArrayList<String> usersTrips;
+
 
 
 
@@ -84,6 +88,7 @@ public class UserFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        usersTrips = new ArrayList<>();
         userID = mUserRetrival.returnUserID();
         addTripButton = (Button) getView().findViewById(R.id.newTripFragments);
         name = (TextView) getView().findViewById(R.id.nameFragment);
@@ -93,15 +98,18 @@ public class UserFragment extends Fragment {
 
        populateDatabase();
 
-        populateUserTrips();
+
 
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
+
         populateUserTrips();
     }
+
 
     public interface OnFragmentInteractionListener{
 
@@ -127,27 +135,17 @@ public class UserFragment extends Fragment {
         fireAdapter = new FirebaseRecyclerAdapter<Trip, TripHolder>(Trip.class, R.layout.trip_list, TripHolder.class, query ) {
             @Override
             protected void populateViewHolder(TripHolder viewHolder, final Trip model, int position) {
+                //need to update to filter based on trips that the current user is memeber of
+                //add in logic of for colorcoding mutual trips
+
+                if(usersTrips.contains(model.getId())){
                 final DatabaseReference savedRef = getRef(position);
                 final String key = savedRef.getKey();
                 viewHolder.setImage(model.getPhoto());
 
-                if(user.getUid().equals( model.getCreator())){
+                if(user.getUid().equals( model.getCreator()) && user.getUid().equals(userID)){
                     viewHolder.setColor();
                     viewHolder.youOwn();
-                    Log.d( "populateViewHolder: ", "it sees that you have a trip");
-
-                }
-                viewHolder.setName(model.getName());
-
-                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(getContext(), ViewTripActivity.class);
-                        intent.putExtra("tripID", model.getId());
-                        startActivity(intent);
-                    }
-                });
-                if(user.getUid().equals(userID)){
                     viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View v) {
@@ -156,9 +154,28 @@ public class UserFragment extends Fragment {
                             return false;
                         }
                     });
+                    Log.d( "populateViewHolder: ", "it sees that you have a trip");
+
+                }else if(user.getUid().equals( model.getCreator())){
+                    viewHolder.youOwn();
+                }
+                viewHolder.setName(model.getName());
+
+                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                            mUserRetrival.startTripFragment( model.getId());
+                    }
+                });
+
+
+            }else{
+                    RecyclerView.LayoutParams param = (RecyclerView.LayoutParams)viewHolder.itemView.getLayoutParams();
+                    param.width = 0;
+                    param.height = 0;
+                    viewHolder.itemView.setLayoutParams(param);
 
                 }
-
             }
         };
         mLayoutManager = new LinearLayoutManager(getContext());
@@ -205,6 +222,24 @@ public class UserFragment extends Fragment {
             }
         });
         usersMemberTrips = mDatabase.child("tripMembers");
+        ValueEventListener membersListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for( DataSnapshot snaps : dataSnapshot.getChildren()){
+                    if(snaps.child(userID).exists()){
+                        usersTrips.add(snaps.getKey());
+                    }
+                }
+                populateUserTrips();
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        usersMemberTrips.addValueEventListener(membersListener);
 
     }
 

@@ -17,7 +17,7 @@ import com.squareup.picasso.Picasso;
 
 public class UserPopulateHolder extends RecyclerView.ViewHolder {
     ImageView image;
-    TextView name;
+    TextView name, owner;
     RelativeLayout layout;
 
     public UserPopulateHolder(View itemView) {
@@ -26,10 +26,10 @@ public class UserPopulateHolder extends RecyclerView.ViewHolder {
         name = (TextView) itemView.findViewById(R.id.userNameMembers);
         image = (ImageView) itemView.findViewById(R.id.userImageMembers);
         layout = (RelativeLayout) itemView.findViewById(R.id.tripMemberLayout);
+        owner = (TextView) itemView.findViewById(R.id.tripOwnerMembers);
     }
-    public void isVisible(){
-        layout.invalidate();
-
+    public void setOwner(){
+            owner.setVisibility(View.VISIBLE);
     }
 
     public void setName(String first, String last){

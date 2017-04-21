@@ -33,4 +33,5 @@
     <string name="leaveChat">Leave Trip</string>
     <string name="userProfilePicture">User Profile Picture</string>
     <string name="createTrip">Create new Trip</string>
+    <string name="tripOwner">Owner</string>
 </resources>
