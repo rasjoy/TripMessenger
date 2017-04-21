@@ -77,6 +77,7 @@ public class ViewTripFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_view_trip, container, false);
+
     }
 
     @Override
@@ -87,12 +88,7 @@ public class ViewTripFragment extends Fragment {
         }catch (ClassCastException e){
             e.printStackTrace();
         }
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+
 
 
     }
@@ -100,7 +96,8 @@ public class ViewTripFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        tripID = mTripRetrival.returnTripID();
+        Bundle bundle = getArguments();
+        tripID = bundle.getString("TripID");
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance().getReference();

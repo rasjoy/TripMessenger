@@ -88,13 +88,24 @@ public class UserFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Bundle bundle = getArguments();
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        if(bundle != null){
+           userID = bundle.getString("UserID");
+       }else{
+           userID = user.getUid();
+
+       }
         usersTrips = new ArrayList<>();
-        userID = mUserRetrival.returnUserID();
+
+
         addTripButton = (Button) getView().findViewById(R.id.newTripFragments);
         name = (TextView) getView().findViewById(R.id.nameFragment);
         image = (ImageView) getView().findViewById(R.id.profilePictureFrag);
         recyclerView = (RecyclerView) getView().findViewById(R.id.fragmentRecylerView);
-        user = mUserRetrival.returnFUser();
+
+
 
        populateDatabase();
 
@@ -137,7 +148,7 @@ public class UserFragment extends Fragment {
             protected void populateViewHolder(TripHolder viewHolder, final Trip model, int position) {
                 //need to update to filter based on trips that the current user is memeber of
                 //add in logic of for colorcoding mutual trips
-
+                Log.d("userstrips", usersTrips.toString());
                 if(usersTrips.contains(model.getId())){
                 final DatabaseReference savedRef = getRef(position);
                 final String key = savedRef.getKey();
@@ -154,7 +165,7 @@ public class UserFragment extends Fragment {
                             return false;
                         }
                     });
-                    Log.d( "populateViewHolder: ", "it sees that you have a trip");
+                    Log.d( "populateViewHolder: ",model.getName());
 
                 }else if(user.getUid().equals( model.getCreator())){
                     viewHolder.youOwn();
@@ -227,6 +238,7 @@ public class UserFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for( DataSnapshot snaps : dataSnapshot.getChildren()){
                     if(snaps.child(userID).exists()){
+                        Log.d("Adding", snaps.getKey());
                         usersTrips.add(snaps.getKey());
                     }
                 }

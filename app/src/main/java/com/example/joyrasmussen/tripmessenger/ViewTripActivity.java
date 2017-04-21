@@ -326,7 +326,7 @@ public class ViewTripActivity extends AppCompatActivity implements UserFragment.
        startActivity(intent);
    }
 
-    @Override
+
     public String returnTripID() {
         return null;
     }
@@ -346,7 +346,7 @@ public class ViewTripActivity extends AppCompatActivity implements UserFragment.
     }
 
 
-    @Override
+
     public String getUserID() {
         return null;
     }

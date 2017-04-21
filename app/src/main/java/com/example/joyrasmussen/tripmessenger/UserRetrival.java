@@ -7,10 +7,7 @@ import com.google.firebase.auth.FirebaseUser;
  */
 
 public interface UserRetrival {
-    public String returnTripID();
-    public String returnUserID();
-    public FirebaseUser returnFUser();
+
     public void startTripFragment(String id);
-    String getUserID();
     public void startCLickedUserFragment(String id);
 }

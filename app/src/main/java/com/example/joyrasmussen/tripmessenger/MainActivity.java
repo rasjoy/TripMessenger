@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.ui.FragmentBase;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -148,45 +149,28 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
 
     }
 
-    @Override
-    public String returnTripID() {
-        return tripID;
-    }
 
-    public String returnUserID(){
-        if(getFragmentManager().getBackStackEntryCount()== 0) {
-            return user.getUid();
-        }
-        else{
-            return usersViewing;
-        }
-
-    }
-    public FirebaseUser returnFUser(){
-        return user;
-
-    }
 
     @Override
     public void startTripFragment(String id) {
-        tripID = id;
+        ViewTripFragment fragment = new ViewTripFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("TripID", id);
+        fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_activity, new ViewTripFragment(), "trip")
+                .replace(R.id.main_activity, fragment, "trip")
                 .addToBackStack(null).commit();
     }
 
 
-
-    @Override
-    public String getUserID() {
-        return null;
-    }
-
     @Override
     public void startCLickedUserFragment(String id) {
-        usersViewing = id;
+        UserFragment fragment = new UserFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("UserID", id);
+        fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_activity, new UserFragment(), "user")
+                .replace(R.id.main_activity, fragment, "user")
                 .addToBackStack(null).commit();
     }
 
