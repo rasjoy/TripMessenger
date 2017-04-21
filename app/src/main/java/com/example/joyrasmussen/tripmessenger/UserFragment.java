@@ -4,12 +4,16 @@ package com.example.joyrasmussen.tripmessenger;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -34,6 +38,7 @@ import java.util.ArrayList;
  * A simple {@link Fragment} subclass.
  */
 public class UserFragment extends Fragment {
+    MenuItem editProfItem;
     String userID;
     UserRetrival mUserRetrival;
    RecyclerView.LayoutManager mLayoutManager;
@@ -68,6 +73,8 @@ public class UserFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        setHasOptionsMenu(true);
+        Log.d("testingOrder", "onCreateView:");
         return inflater.inflate(R.layout.fragment_user, container, false);
 
     }
@@ -76,6 +83,7 @@ public class UserFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        Log.d("testingOrder", "Onattached:");
         try{
             mUserRetrival = (UserRetrival) context;
         }catch (ClassCastException e){
@@ -84,12 +92,30 @@ public class UserFragment extends Fragment {
 
 
     }
+    private void authListener(){
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                user = firebaseAuth.getCurrentUser();
+                if (user == null) {
+                    Log.d( "onAuthStateChanged: ", "signed in");
+                    ((MainActivity) getActivity()).getSupportFragmentManager().popBackStack();
+                    //start edit profile automatically
+                }
+            }
+        };
+
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Log.d("testingOrder","onActivityCreated: ");
         Bundle bundle = getArguments();
         auth = FirebaseAuth.getInstance();
+        authListener();
+        auth.addAuthStateListener(mAuthListener);
         user = auth.getCurrentUser();
         if(bundle != null){
            userID = bundle.getString("UserID");
@@ -110,6 +136,27 @@ public class UserFragment extends Fragment {
        populateDatabase();
 
 
+
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        Log.d("testingOrder", "onCreateOptionsMenu: ");
+
+        inflater.inflate(R.menu.main_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        editProfItem = menu.findItem(R.id.editProfileMain);
+
+        if(!userID.equals(user.getUid())){
+            editProfItem.setVisible(false);
+
+        }
 
     }
 
@@ -265,4 +312,7 @@ public class UserFragment extends Fragment {
             }
         });
     }
+
+
+
 }

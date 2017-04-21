@@ -2,6 +2,7 @@ package com.example.joyrasmussen.tripmessenger;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,13 +12,20 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -39,7 +47,7 @@ import java.util.Map;
  * A simple {@link Fragment} subclass.
  */
 public class ViewTripFragment extends Fragment {
-
+    MenuItem canEdit;
     private OnFragmentInteractionListener mListener;
     FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -76,7 +84,66 @@ public class ViewTripFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        setHasOptionsMenu(true);
         return inflater.inflate(R.layout.fragment_view_trip, container, false);
+
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        Log.d("testingOrder", "onCreateOptionsMenu: ");
+
+
+        inflater.inflate(R.menu.trip_view_menu, menu);
+
+
+        onPrepareOptionsMenu(menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.signOutTripViewMenu:
+                AuthUI.getInstance().signOut(getActivity())
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(getActivity(), "Sign out was successful", Toast.LENGTH_LONG).show();
+                                } else {
+
+                                }
+                            }
+                        });
+                ((MainActivity) getActivity()).getSupportFragmentManager().popBackStack();
+                return true;
+            case R.id.goToChatMenuTrip:
+                //start chat intent for this activity
+                Intent intent1 = new Intent(getContext(), ChatRoom.class);
+                intent1.putExtra("chatID", tripID);
+                startActivity(intent1);
+
+                return true;
+            case R.id.edtiTripView:
+                Intent intent = new Intent(getContext(), EditTripActivity.class);
+                intent.putExtra("tripID", tripID);
+                startActivity(intent);
+
+                return true;
+            default:
+                return  true;
+
+        }
+    }
+
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        canEdit =  menu.findItem(R.id.edtiTripView);
+        if(isOwner){
+            canEdit.setVisible(true);
+        }
 
     }
 
@@ -95,6 +162,7 @@ public class ViewTripFragment extends Fragment {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+
         super.onActivityCreated(savedInstanceState);
         Bundle bundle = getArguments();
         tripID = bundle.getString("TripID");
@@ -111,12 +179,33 @@ public class ViewTripFragment extends Fragment {
         members = (RecyclerView) getView().findViewById(R.id.tripMemberRecycler);
         owner = (TextView) getView().findViewById(R.id.ownerETtripView);
         image = (ImageView) getView().findViewById(R.id.tripViewImage);
+        setOnclickListeners();
 
         tripReference = mDatabase.child("trips").child(tripID);
         membersReference = mDatabase.child("tripMembers").child(tripID);
         userReference = mDatabase.child("users");
         getView().findViewById(R.id.elements).setVisibility(View.VISIBLE);
 
+
+    }
+    public void setOnclickListeners(){
+        enterChatroom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), ChatRoom.class);
+                intent.putExtra("chatID", tripID);
+                startActivity(intent);
+            }
+        });
+
+        editTrip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), EditTripActivity.class);
+                intent.putExtra("tripID", tripID);
+                startActivity(intent);
+            }
+        });
 
     }
     public void populateList(){
@@ -164,6 +253,7 @@ public class ViewTripFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        Log.d("testingOrder", "onStart: ");
         getView().findViewById(R.id.elements).setVisibility(View.VISIBLE);
         authListener();
         auth.addAuthStateListener(mAuthListener);
@@ -192,8 +282,10 @@ public class ViewTripFragment extends Fragment {
                 if(creator.equals(user.getUid())){
                     owner.setText("You");
                     isOwner = true;
+
                 }else{
                     editTrip.setVisibility(View.GONE);
+
                     userReference.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -229,6 +321,10 @@ public class ViewTripFragment extends Fragment {
                 if(td != null){
                     whoIsAMember = Arrays.asList(td.keySet().toArray());
                     Log.d("Memebers", whoIsAMember.toString());
+                    if(!whoIsAMember.contains(user.getUid())){
+                        editTrip.setVisibility(View.GONE);
+                      enterChatroom.setVisibility(View.GONE);
+                    }
                     populateList();
                 }
             }
@@ -283,23 +379,20 @@ public class ViewTripFragment extends Fragment {
             tripReference.removeEventListener(tripListener);
         }
     }
-
     private void authListener(){
+
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 user = firebaseAuth.getCurrentUser();
-                if (user != null) {
+                if (user == null) {
                     Log.d( "onAuthStateChanged: ", "signed in");
-
-                    //start edit profile automatically
-                } else {
                     ((MainActivity) getActivity()).getSupportFragmentManager().popBackStack();
+                    //start edit profile automatically
                 }
             }
         };
 
     }
-
 
 }
