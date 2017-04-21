@@ -62,7 +62,7 @@ public class ChatRoom extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
         chatID = getIntent().getStringExtra("chatID");
-        mAuth = FirebaseAuth.getInstance();
+
         populate();
 
     }
@@ -75,7 +75,7 @@ public class ChatRoom extends AppCompatActivity {
         name = (TextView) findViewById(R.id.chatTripName);
         postRecycler = (RecyclerView) findViewById(R.id.chatRoomRecycler);
         location = (TextView) findViewById(R.id.tripLocation);
-        deleteReference = mDatabase.child("deleteChats");
+        deleteReference = mDatabase.child("deleteChats").child(chatID);
         userReference = mDatabase.child("users");
         setmAdapter();
 
@@ -182,9 +182,12 @@ public class ChatRoom extends AppCompatActivity {
 
     }
 
+
     @Override
     protected void onStart() {
         super.onStart();
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
         authListener();
         mAuth.addAuthStateListener(mAuthListener);
         ValueEventListener listen = new ValueEventListener() {
@@ -220,8 +223,9 @@ public class ChatRoom extends AppCompatActivity {
         ValueEventListener deleteListen = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Map<String, Boolean> td = (HashMap<String,Boolean>) dataSnapshot.getValue();
-                 isVisible = (ArrayList<String>) td.keySet();
+                for(DataSnapshot snaps : dataSnapshot.getChildren()) {
+
+                }
             }
 
             @Override
