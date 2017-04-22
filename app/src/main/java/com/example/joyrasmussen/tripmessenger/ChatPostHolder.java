@@ -42,7 +42,7 @@ public class ChatPostHolder extends RecyclerView.ViewHolder{
         user.setText(userName);
     }
     public void setPost(String postText){
-        if(postText != null || postText.equals("")){
+        if(postText != null && postText.equals("")){
             post.setText(postText);
         }else{
             post.setVisibility(View.GONE);
@@ -51,7 +51,7 @@ public class ChatPostHolder extends RecyclerView.ViewHolder{
     public void setImage(String url){
 
         if(url != null && !url.equals("")) {
-        Picasso.with(image.getContext()).load(url).into(image);
+            Picasso.with(image.getContext()).load(url).into(image);
 
         }else{
             imageLayout.setVisibility(View.GONE);
