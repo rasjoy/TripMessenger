@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -108,6 +109,23 @@ public class ManageFriends extends Fragment {
         listView = (ListView) getView().findViewById(R.id.friendsListView);
 
         friendName = (EditText) getView().findViewById(R.id.addFriendET);
+
+        Button searchButton = (Button) getView().findViewById(R.id.discoverFriendButton);
+        Button addButton = (Button) getView().findViewById(R.id.addFriendButton);
+
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                search();
+            }
+        });
+
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                add();
+            }
+        });
 
         dbRef = FirebaseDatabase.getInstance().getReference();
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -376,7 +394,7 @@ public class ManageFriends extends Fragment {
 //        super.onDestroy();
 //    }
 
-    public void add(View v) {
+    public void add() {
 
         String name = friendName.getText().toString().replace(" ", "_");
 
@@ -406,7 +424,7 @@ public class ManageFriends extends Fragment {
 
     }
 
-    public void search(View v) {
+    public void search() {
 
         Intent i = new Intent(getContext(), FindFriends.class);
         startActivity(i);
