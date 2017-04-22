@@ -1,6 +1,7 @@
 package com.example.joyrasmussen.tripmessenger;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -39,7 +40,7 @@ public class SignInFragment extends Fragment  implements  GoogleApiClient.OnConn
 
     FirebaseAuth auth;
     Button signIn;
-
+    private OnFragmentInteractionListener mListener;
     private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
@@ -56,6 +57,17 @@ public class SignInFragment extends Fragment  implements  GoogleApiClient.OnConn
         return inflater.inflate(R.layout.fragment_sign_in, container, false);
 
 
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
     }
 
     @Override
@@ -96,6 +108,7 @@ public class SignInFragment extends Fragment  implements  GoogleApiClient.OnConn
                 .enableAutoManage(getActivity() /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+        mListener.setMyAPI(mGoogleApiClient);
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, MainActivity.SIGN_IN);
     }
@@ -130,5 +143,6 @@ public class SignInFragment extends Fragment  implements  GoogleApiClient.OnConn
     }
 
     public interface OnFragmentInteractionListener {
+           void setMyAPI(GoogleApiClient client);
     }
 }

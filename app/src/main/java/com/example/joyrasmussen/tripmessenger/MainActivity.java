@@ -13,6 +13,9 @@ import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ui.FragmentBase;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.credentials.CredentialsApi;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
     private FirebaseAuth.AuthStateListener mAuthListener;
     FirebaseUser user;
     DatabaseReference userReference;
+    private GoogleApiClient mGoogleApiClient;
     DatabaseReference tripReference;
     DatabaseReference mDatabase;
     String usersViewing;
@@ -59,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
                 getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
                 auth.signOut();
+                Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+
                 Toast.makeText(this, "Sign out was successful", Toast.LENGTH_SHORT).show();
 
                 signinFragment();
@@ -188,5 +194,8 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
     }
 
 
-
+    @Override
+    public void setMyAPI(GoogleApiClient client) {
+        mGoogleApiClient = client;
+    }
 }
