@@ -7,12 +7,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +34,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
@@ -50,6 +54,7 @@ public class ChatRoom extends AppCompatActivity {
     ValueEventListener tripListener, postListener, deleteListener, userListener;
     RecyclerView postRecycler;
     ArrayList<String> isInvisible;
+    ImageButton postButton;
     EditText message;
     ImageView image, postImage;
     User currentUser;
@@ -81,6 +86,26 @@ public class ChatRoom extends AppCompatActivity {
         tripReference = mDatabase.child("trips").child(chatID);
         postReferences = mDatabase.child("posts").child(chatID);
         message = (EditText) findViewById(R.id.messageEditTextChat);
+        message.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(count > 0){
+                    postButton.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        postButton = (ImageButton) findViewById(R.id.sendButtonChat);
+        postButton.setEnabled(false);
         image = (ImageView) findViewById(R.id.tripImage);
         name = (TextView) findViewById(R.id.chatTripName);
         postImage = (ImageView) findViewById(R.id.imageToPost);
@@ -88,6 +113,7 @@ public class ChatRoom extends AppCompatActivity {
         location = (TextView) findViewById(R.id.tripLocation);
         deleteReference = mDatabase.child("deleteChats").child(chatID);
         userReference = mDatabase.child("users");
+        storageRef = FirebaseStorage.getInstance().getReference();
 
 
     }
@@ -202,12 +228,16 @@ public class ChatRoom extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
                         // Handle unsuccessful uploads
+
                         Toast.makeText(ChatRoom.this, "Image upload failure", Toast.LENGTH_SHORT).show();
                     }
                 }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             hidePostImage();
+
+                        @SuppressWarnings("VisibleForTests") String downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                        newMessage.setImageURL(downloadUrl);
                             postReferences.child(newMessage.getId()).setValue(newMessage);
 
                     }
@@ -334,6 +364,7 @@ public class ChatRoom extends AppCompatActivity {
         if (requestCode == 111 && resultCode == RESULT_OK && data != null && data.getData() != null) {
             filePath = data.getData();
             setPostImage(filePath.toString());
+            postButton.setEnabled(true);
            // setImage(filePath.toString());
             Toast.makeText(this, "Don't forget to hit send to upload image", Toast.LENGTH_SHORT).show();
 

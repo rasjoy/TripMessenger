@@ -3,6 +3,7 @@ package com.example.joyrasmussen.tripmessenger;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -12,6 +13,11 @@ import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ui.FragmentBase;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.credentials.CredentialsApi;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,15 +28,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class MainActivity extends AppCompatActivity implements SignInFragment.OnFragmentInteractionListener,ViewTripFragment.OnFragmentInteractionListener, UserFragment.OnFragmentInteractionListener, UserRetrival, TripRetrival {
+public class MainActivity extends AppCompatActivity implements SignInFragment.OnFragmentInteractionListener,ViewTripFragment.OnFragmentInteractionListener, UserFragment.OnFragmentInteractionListener, UserRetrival, TripRetrival, GoogleApiClient.OnConnectionFailedListener {
     FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     FirebaseUser user;
     DatabaseReference userReference;
+    static GoogleApiClient mGoogleApiClient;
     DatabaseReference tripReference;
     DatabaseReference mDatabase;
     String usersViewing;
     String tripID;
+    GoogleSignInOptions gso;
      static final int SIGN_IN = 123;
 
     @Override
@@ -41,29 +49,43 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
         mDatabase = FirebaseDatabase.getInstance().getReference();
         userReference = mDatabase.child("users");
         tripReference = mDatabase.child("trips");
-
-
+      set();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
 
+        return super.onCreateOptionsMenu(menu);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.signOutTripViewMenu:
             case R.id.signOutMainMenu:
-                AuthUI.getInstance().signOut(this)
+                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+
+                Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                auth.signOut();
+                Toast.makeText(this, "Sign out was successful", Toast.LENGTH_SHORT).show();
+
+              //  signinFragment();
+                 //   mAuthListener.onAuthStateChanged(auth);
+                /* AuthUI.getInstance().signOut(this)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
-                                    user = null;
+
+                                    signinFragment();
                                     Toast.makeText(MainActivity.this, "Sign out was successful", Toast.LENGTH_LONG).show();
                                 } else {
 
                                 }
                             }
-                        });
-                getSupportFragmentManager().popBackStack();
+                        });*/
+
 
                 return true;
             case R.id.mangageFriendsMain:
@@ -98,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
                                         .addToBackStack(null).commit();
 
 
+
                             }else {
                                 Toast.makeText(MainActivity.this, "Please complete your profile", Toast.LENGTH_LONG).show();
                                 Intent i = new Intent(MainActivity.this, EditProfile.class);
@@ -111,8 +134,9 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
                     });
                     //start edit profile automatically
                 } else {
-                    getSupportFragmentManager().beginTransaction()
-                            .add(R.id.main_activity, new SignInFragment(), "first" ).commit();
+
+                   // getSupportFragmentManager().popBackStack("sign", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    signinFragment();
                 }
             }
         };
@@ -170,8 +194,46 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
                 .addToBackStack(null).commit();
     }
 
+    private void signinFragment(){
+        Log.d( "signinFragment: ", "yo");
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.main_activity, new SignInFragment(), "first" ).addToBackStack("sign").commit();
+    }
 
 
+    @Override
+    public GoogleApiClient getMyAPI() {
 
+        return  mGoogleApiClient;
+    }
+    public void set(){
+       gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        // [END config_signin]
 
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */,
+                        this /* OnConnectionFailedListener */)
+                .addApi(Auth.CREDENTIALS_API).addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+
+                .build();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        //Log.d( "onBackPressed: ", getSupportFragmentManager().getBackStackEntryCount() + "" );
+        if(auth.getCurrentUser()==null){
+            finish();
+        }else if (getSupportFragmentManager().getBackStackEntryCount() == 0){
+            finish();
+        }
+    }
 }
