@@ -94,7 +94,7 @@ public class ChatRoom extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(count > 0){
+                if(s.length() > 0){
                     postButton.setEnabled(true);
                 }
             }
@@ -168,6 +168,7 @@ public class ChatRoom extends AppCompatActivity {
                     });
                     if (model.getUsrId().equals(user.getUid())) {
                         viewHolder.setUser("You");
+                        viewHolder.itemView.setBackgroundResource(R.color.mBlue);
 
                     } else {
                         userReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -216,6 +217,7 @@ public class ChatRoom extends AppCompatActivity {
             newMessage.setId(UUID.randomUUID().toString());
             newMessage.setTime( System.currentTimeMillis());
             newMessage.setUsrId(user.getUid());
+            newMessage.setText(message.getText().toString());
 
 
 
@@ -245,7 +247,8 @@ public class ChatRoom extends AppCompatActivity {
 
             }else{
 
-
+                postReferences.child(newMessage.getId()).setValue(newMessage);
+                message.setText("");
 
             }
 

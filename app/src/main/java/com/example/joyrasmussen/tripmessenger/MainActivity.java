@@ -207,18 +207,20 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
         return  mGoogleApiClient;
     }
     public void set(){
-       gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        // [END config_signin]
+        if(mGoogleApiClient == null) {
+            gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build();
+            // [END config_signin]
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */,
-                        this /* OnConnectionFailedListener */)
-                .addApi(Auth.CREDENTIALS_API).addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .enableAutoManage(this /* FragmentActivity */,
+                            this /* OnConnectionFailedListener */)
+                    .addApi(Auth.CREDENTIALS_API).addApi(Auth.GOOGLE_SIGN_IN_API, gso)
 
-                .build();
+                    .build();
+        }
     }
 
     @Override
