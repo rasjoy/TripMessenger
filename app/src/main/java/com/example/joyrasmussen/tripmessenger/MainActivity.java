@@ -3,6 +3,7 @@ package com.example.joyrasmussen.tripmessenger;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -45,25 +46,37 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
 
+        return super.onCreateOptionsMenu(menu);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.signOutMainMenu:
-                AuthUI.getInstance().signOut(this)
+                getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+                auth.signOut();
+                Toast.makeText(this, "Sign out was successful", Toast.LENGTH_SHORT).show();
+
+                signinFragment();
+
+                /* AuthUI.getInstance().signOut(this)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
-                                    user = null;
+
+                                    signinFragment();
                                     Toast.makeText(MainActivity.this, "Sign out was successful", Toast.LENGTH_LONG).show();
                                 } else {
 
                                 }
                             }
-                        });
-                getSupportFragmentManager().popBackStack();
+                        });*/
+
 
                 return true;
             case R.id.mangageFriendsMain:
@@ -111,8 +124,7 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
                     });
                     //start edit profile automatically
                 } else {
-                    getSupportFragmentManager().beginTransaction()
-                            .add(R.id.main_activity, new SignInFragment(), "first" ).commit();
+                  signinFragment();
                 }
             }
         };
@@ -170,7 +182,10 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
                 .addToBackStack(null).commit();
     }
 
-
+    private void signinFragment(){
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.main_activity, new SignInFragment(), "first" ).commit();
+    }
 
 
 
