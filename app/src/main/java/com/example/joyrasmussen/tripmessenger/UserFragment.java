@@ -100,7 +100,7 @@ public class UserFragment extends Fragment {
                 user = firebaseAuth.getCurrentUser();
                 if (user == null) {
                    // Log.d( "onAuthStateChanged: ", "signed in");
-                    ((MainActivity) getActivity()).getSupportFragmentManager().popBackStack();
+                    //((MainActivity) getActivity()).getSupportFragmentManager().popBackStack();
 
                     //start edit profile automatically
                 }

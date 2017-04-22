@@ -103,20 +103,7 @@ public class ViewTripFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case R.id.signOutTripViewMenu:
-                AuthUI.getInstance().signOut(getActivity())
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(getActivity(), "Sign out was successful", Toast.LENGTH_LONG).show();
-                                } else {
 
-                                }
-                            }
-                        });
-                ((MainActivity) getActivity()).getSupportFragmentManager().popBackStack();
-                return true;
             case R.id.goToChatMenuTrip:
                 //start chat intent for this activity
                 Intent intent1 = new Intent(getContext(), ChatRoom.class);

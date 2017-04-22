@@ -15,6 +15,8 @@ import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ui.FragmentBase;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.credentials.CredentialsApi;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -26,16 +28,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class MainActivity extends AppCompatActivity implements SignInFragment.OnFragmentInteractionListener,ViewTripFragment.OnFragmentInteractionListener, UserFragment.OnFragmentInteractionListener, UserRetrival, TripRetrival {
+public class MainActivity extends AppCompatActivity implements SignInFragment.OnFragmentInteractionListener,ViewTripFragment.OnFragmentInteractionListener, UserFragment.OnFragmentInteractionListener, UserRetrival, TripRetrival, GoogleApiClient.OnConnectionFailedListener {
     FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     FirebaseUser user;
     DatabaseReference userReference;
-    private GoogleApiClient mGoogleApiClient;
+    static GoogleApiClient mGoogleApiClient;
     DatabaseReference tripReference;
     DatabaseReference mDatabase;
     String usersViewing;
     String tripID;
+    GoogleSignInOptions gso;
      static final int SIGN_IN = 123;
 
     @Override
@@ -46,8 +49,7 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
         mDatabase = FirebaseDatabase.getInstance().getReference();
         userReference = mDatabase.child("users");
         tripReference = mDatabase.child("trips");
-
-
+      set();
     }
 
     @Override
@@ -59,16 +61,17 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.signOutTripViewMenu:
             case R.id.signOutMainMenu:
-                getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
-                auth.signOut();
+
                 Auth.GoogleSignInApi.signOut(mGoogleApiClient);
-
+                auth.signOut();
                 Toast.makeText(this, "Sign out was successful", Toast.LENGTH_SHORT).show();
 
-                signinFragment();
-
+              //  signinFragment();
+                 //   mAuthListener.onAuthStateChanged(auth);
                 /* AuthUI.getInstance().signOut(this)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
@@ -117,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
                                         .addToBackStack(null).commit();
 
 
+
                             }else {
                                 Toast.makeText(MainActivity.this, "Please complete your profile", Toast.LENGTH_LONG).show();
                                 Intent i = new Intent(MainActivity.this, EditProfile.class);
@@ -130,7 +134,9 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
                     });
                     //start edit profile automatically
                 } else {
-                  signinFragment();
+
+                   // getSupportFragmentManager().popBackStack("sign", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    signinFragment();
                 }
             }
         };
@@ -189,13 +195,45 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
     }
 
     private void signinFragment(){
+        Log.d( "signinFragment: ", "yo");
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.main_activity, new SignInFragment(), "first" ).commit();
+                .add(R.id.main_activity, new SignInFragment(), "first" ).addToBackStack("sign").commit();
     }
 
 
     @Override
-    public void setMyAPI(GoogleApiClient client) {
-        mGoogleApiClient = client;
+    public GoogleApiClient getMyAPI() {
+
+        return  mGoogleApiClient;
+    }
+    public void set(){
+       gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        // [END config_signin]
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */,
+                        this /* OnConnectionFailedListener */)
+                .addApi(Auth.CREDENTIALS_API).addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+
+                .build();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        //Log.d( "onBackPressed: ", getSupportFragmentManager().getBackStackEntryCount() + "" );
+        if(auth.getCurrentUser()==null){
+            finish();
+        }else if (getSupportFragmentManager().getBackStackEntryCount() == 0){
+            finish();
+        }
     }
 }

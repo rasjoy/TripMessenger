@@ -73,8 +73,15 @@ public class SignInFragment extends Fragment  implements  GoogleApiClient.OnConn
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        signIn = (Button) getActivity().findViewById(R.id.signInButton);
 
+        signIn = (Button) getActivity().findViewById(R.id.signInButton);
+        signIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("login:", "click");
+                logIn();
+            }
+        });
         auth = FirebaseAuth.getInstance();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -82,34 +89,29 @@ public class SignInFragment extends Fragment  implements  GoogleApiClient.OnConn
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    ((MainActivity) getActivity()).getSupportFragmentManager().popBackStack();
+                   // ((MainActivity) getActivity()).getSupportFragmentManager().popBackStack();
 
-                } else {
 
                 }
             }
         };
-        signIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logIn();
-            }
-        });
+
     }
 
     public void logIn() {
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+      /*  GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         // [END config_signin]
 
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                .enableAutoManage(getActivity() /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .enableAutoManage(getActivity() *//* FragmentActivity *//*, this *//* OnConnectionFailedListener *//*)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-        mListener.setMyAPI(mGoogleApiClient);
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        mListener.setMyAPI(mGoogleApiClient);*/
+        Log.d( "logIn: ", "working?!");
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mListener.getMyAPI());
         startActivityForResult(signInIntent, MainActivity.SIGN_IN);
     }
 
@@ -143,6 +145,8 @@ public class SignInFragment extends Fragment  implements  GoogleApiClient.OnConn
     }
 
     public interface OnFragmentInteractionListener {
-           void setMyAPI(GoogleApiClient client);
+         GoogleApiClient getMyAPI();
     }
+
+
 }
