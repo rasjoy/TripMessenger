@@ -49,9 +49,8 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
         mDatabase = FirebaseDatabase.getInstance().getReference();
         userReference = mDatabase.child("users");
         tripReference = mDatabase.child("trips");
-      set();
-    }
 
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -63,13 +62,7 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
         switch (item.getItemId()) {
             case R.id.signOutTripViewMenu:
             case R.id.signOutMainMenu:
-                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-
-
-                Auth.GoogleSignInApi.signOut(mGoogleApiClient);
-                auth.signOut();
-                Toast.makeText(this, "Sign out was successful", Toast.LENGTH_SHORT).show();
-
+            signout();
               //  signinFragment();
                  //   mAuthListener.onAuthStateChanged(auth);
                 /* AuthUI.getInstance().signOut(this)
@@ -102,8 +95,15 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
     }
 
     @Override
+    protected void onStart() {
+        set();
+        super.onStart();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -230,10 +230,20 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
     public void onBackPressed() {
         super.onBackPressed();
         //Log.d( "onBackPressed: ", getSupportFragmentManager().getBackStackEntryCount() + "" );
-        if(auth.getCurrentUser()==null){
+        if (auth.getCurrentUser() == null) {
             finish();
-        }else if (getSupportFragmentManager().getBackStackEntryCount() == 0){
+        } else if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
             finish();
         }
     }
-}
+        public void signout(){
+        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+        auth.signOut();
+        Toast.makeText(this, "Sign out was successful", Toast.LENGTH_SHORT).show();
+
+    }
+    }
+

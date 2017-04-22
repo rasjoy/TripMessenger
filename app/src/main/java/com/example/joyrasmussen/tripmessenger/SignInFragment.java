@@ -8,11 +8,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -23,6 +25,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -43,7 +46,7 @@ public class SignInFragment extends Fragment  implements  GoogleApiClient.OnConn
     private OnFragmentInteractionListener mListener;
     private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth.AuthStateListener mAuthListener;
-
+    LinearLayout progress;
     public SignInFragment() {
         // Required empty public constructor
     }
@@ -73,7 +76,7 @@ public class SignInFragment extends Fragment  implements  GoogleApiClient.OnConn
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        progress = (LinearLayout) getActivity().findViewById(R.id.signInprogress);
         signIn = (Button) getActivity().findViewById(R.id.signInButton);
         signIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,7 +113,9 @@ public class SignInFragment extends Fragment  implements  GoogleApiClient.OnConn
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
         mListener.setMyAPI(mGoogleApiClient);*/
+        signIn.setVisibility(View.INVISIBLE);
         Log.d( "logIn: ", "working?!");
+        progress.setVisibility(View.VISIBLE);
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mListener.getMyAPI());
         startActivityForResult(signInIntent, MainActivity.SIGN_IN);
     }
@@ -120,19 +125,26 @@ public class SignInFragment extends Fragment  implements  GoogleApiClient.OnConn
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == MainActivity.SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-
             AuthCredential credential = GoogleAuthProvider.getCredential(result.getSignInAccount().getIdToken(), null);
             auth.signInWithCredential(credential)
                     .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             //do something
-                            Log.d( "onComplete: ", "signed in" + auth.getCurrentUser().toString());
+                           progress.setVisibility(View.INVISIBLE);
+                            //Log.d( "onComplete: ", "signed in" + auth.getCurrentUser().toString());
                             Toast.makeText(getActivity(), "Sucessfully logged in as " + auth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
                             getActivity().getSupportFragmentManager().beginTransaction().remove(SignInFragment.this).commit();
 
                         }
-                    });
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    progress.setVisibility(View.GONE);
+                    signIn.setVisibility(View.VISIBLE);
+                    Toast.makeText(getActivity(), "Log in Failed", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
