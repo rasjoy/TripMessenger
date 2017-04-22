@@ -10,6 +10,8 @@ public class Message {
     long  time;
     String text, usrId, id, imageURL;
 
+    public Message() {
+    }
 
     public Message(long time, String text, String usrId, String id, String imageURL) {
         this.time = time;

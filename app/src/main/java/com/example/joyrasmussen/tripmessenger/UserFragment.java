@@ -74,7 +74,7 @@ public class UserFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         setHasOptionsMenu(true);
-        Log.d("testingOrder", "onCreateView:");
+       // Log.d("testingOrder", "onCreateView:");
         return inflater.inflate(R.layout.fragment_user, container, false);
 
     }
@@ -83,7 +83,7 @@ public class UserFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Log.d("testingOrder", "Onattached:");
+      //  Log.d("testingOrder", "Onattached:");
         try{
             mUserRetrival = (UserRetrival) context;
         }catch (ClassCastException e){
@@ -99,7 +99,7 @@ public class UserFragment extends Fragment {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 user = firebaseAuth.getCurrentUser();
                 if (user == null) {
-                    Log.d( "onAuthStateChanged: ", "signed in");
+                   // Log.d( "onAuthStateChanged: ", "signed in");
                     ((MainActivity) getActivity()).getSupportFragmentManager().popBackStack();
                     //start edit profile automatically
                 }
@@ -111,7 +111,7 @@ public class UserFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d("testingOrder","onActivityCreated: ");
+       // Log.d("testingOrder","onActivityCreated: ");
         Bundle bundle = getArguments();
         auth = FirebaseAuth.getInstance();
         authListener();
@@ -142,7 +142,7 @@ public class UserFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        Log.d("testingOrder", "onCreateOptionsMenu: ");
+       // Log.d("testingOrder", "onCreateOptionsMenu: ");
 
         inflater.inflate(R.menu.main_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
@@ -178,7 +178,7 @@ public class UserFragment extends Fragment {
     public void populateUserProfile(){
         name.setText(viewUser.getFirstName() + " " + viewUser.getLastName());
         String imageURL = viewUser.getImageURL();
-        if(!imageURL.equals("") || imageURL != null) {
+        if(!imageURL.equals("") && imageURL != null) {
             Picasso.with(getContext()).load(imageURL).into(image);
         }
         if(!userID.equals(user.getUid())){
@@ -195,7 +195,7 @@ public class UserFragment extends Fragment {
             protected void populateViewHolder(TripHolder viewHolder, final Trip model, int position) {
                 //need to update to filter based on trips that the current user is memeber of
                 //add in logic of for colorcoding mutual trips
-                Log.d("userstrips", usersTrips.toString());
+              //  Log.d("userstrips", usersTrips.toString());
                 if(usersTrips.contains(model.getId())){
                 final DatabaseReference savedRef = getRef(position);
                 final String key = savedRef.getKey();
@@ -212,7 +212,7 @@ public class UserFragment extends Fragment {
                             return false;
                         }
                     });
-                    Log.d( "populateViewHolder: ",model.getName());
+                   // Log.d( "populateViewHolder: ",model.getName());
 
                 }else if(user.getUid().equals( model.getCreator())){
                     viewHolder.youOwn();
@@ -251,12 +251,12 @@ public class UserFragment extends Fragment {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mUserRef = mDatabase.child("users").child(userID);
         tripUserRef = mDatabase.child("users");
-        Log.d( "onActivityCreated: ", userID);
+       // Log.d( "onActivityCreated: ", userID);
         mUserRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 viewUser = dataSnapshot.getValue(User.class);
-                Log.d( "onDataChange: ", viewUser.toString());
+               // Log.d( "onDataChange: ", viewUser.toString());
                 populateUserProfile();
 
             }
@@ -285,7 +285,7 @@ public class UserFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for( DataSnapshot snaps : dataSnapshot.getChildren()){
                     if(snaps.child(userID).exists()){
-                        Log.d("Adding", snaps.getKey());
+                       // Log.d("Adding", snaps.getKey());
                         usersTrips.add(snaps.getKey());
                     }
                 }

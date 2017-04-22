@@ -34,4 +34,6 @@
     <string name="userProfilePicture">User Profile Picture</string>
     <string name="createTrip">Create new Trip</string>
     <string name="tripOwner">Owner</string>
+    <string name="tripsbelongto">Trips Belong To</string>
+    <string name="tripMember">Trips:</string>
 </resources>

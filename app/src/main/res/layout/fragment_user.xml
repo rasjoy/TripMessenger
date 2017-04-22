@@ -51,8 +51,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/newTripFragments"
-            android:layout_below="@+id/profilePictureFrag"
+            android:layout_below="@+id/usersTripsUser"
             android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:id="@+id/usersTripsUser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_below="@+id/profilePictureFrag"
+            android:layout_margin="10dp"
+            android:text="@string/tripMember"
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
     </RelativeLayout>
 
 
