@@ -2,11 +2,13 @@ package com.example.joyrasmussen.tripmessenger;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -41,9 +43,9 @@ public class UserFragment extends Fragment {
     MenuItem editProfItem;
     String userID;
     UserRetrival mUserRetrival;
-   RecyclerView.LayoutManager mLayoutManager;
+    RecyclerView.LayoutManager mLayoutManager;
     Button addTripButton;
-   // User currentUser;
+    // User currentUser;
     User viewUser;
     FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -60,6 +62,8 @@ public class UserFragment extends Fragment {
     FirebaseRecyclerAdapter<Trip, TripHolder> fireAdapter;
     Query query;
     ArrayList<String> usersTrips;
+    AlertDialog.Builder alert;
+    private  ValueEventListener tripListener,  userListener, membersListener;
 
 
 
@@ -74,7 +78,7 @@ public class UserFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         setHasOptionsMenu(true);
-       // Log.d("testingOrder", "onCreateView:");
+        // Log.d("testingOrder", "onCreateView:");
         return inflater.inflate(R.layout.fragment_user, container, false);
 
     }
@@ -83,7 +87,7 @@ public class UserFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-      //  Log.d("testingOrder", "Onattached:");
+        //  Log.d("testingOrder", "Onattached:");
         try{
             mUserRetrival = (UserRetrival) context;
         }catch (ClassCastException e){
@@ -99,7 +103,7 @@ public class UserFragment extends Fragment {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 user = firebaseAuth.getCurrentUser();
                 if (user == null) {
-                   // Log.d( "onAuthStateChanged: ", "signed in");
+                    // Log.d( "onAuthStateChanged: ", "signed in");
                     //((MainActivity) getActivity()).getSupportFragmentManager().popBackStack();
 
                     //start edit profile automatically
@@ -112,7 +116,7 @@ public class UserFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-       // Log.d("testingOrder","onActivityCreated: ");
+        // Log.d("testingOrder","onActivityCreated: ");
         Bundle bundle = getArguments();
         auth = FirebaseAuth.getInstance();
         authListener();
@@ -122,11 +126,11 @@ public class UserFragment extends Fragment {
             ((MainActivity) getActivity()).getSupportFragmentManager().popBackStack();
         }
         if(bundle != null){
-           userID = bundle.getString("UserID");
-       }else{
-           userID = user.getUid();
+            userID = bundle.getString("UserID");
+        }else{
+            userID = user.getUid();
 
-       }
+        }
         usersTrips = new ArrayList<>();
 
 
@@ -137,7 +141,7 @@ public class UserFragment extends Fragment {
 
 
 
-       populateDatabase();
+        populateDatabase();
 
 
 
@@ -146,7 +150,7 @@ public class UserFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-       // Log.d("testingOrder", "onCreateOptionsMenu: ");
+        // Log.d("testingOrder", "onCreateOptionsMenu: ");
 
         inflater.inflate(R.menu.main_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
@@ -178,6 +182,19 @@ public class UserFragment extends Fragment {
 
     }
 
+    @Override
+    public void onDestroy() {
+        if(tripListener != null){
+            tripsRef.removeEventListener(tripListener);
+        }
+        if(userListener != null){
+            mUserRef.removeEventListener(userListener);
+        }
+        if(membersListener != null){
+            usersMemberTrips.removeEventListener(membersListener);
+        }
+        super.onDestroy();
+    }
 
     public void populateUserProfile(){
         name.setText(viewUser.getFirstName() + " " + viewUser.getLastName());
@@ -192,87 +209,110 @@ public class UserFragment extends Fragment {
 
         }
     }
-    public void populateUserTrips(){
+    public void populateUserTrips() {
         query = tripsRef.orderByChild("creator");
-        fireAdapter = new FirebaseRecyclerAdapter<Trip, TripHolder>(Trip.class, R.layout.trip_list, TripHolder.class, query ) {
-            @Override
-            protected void populateViewHolder(TripHolder viewHolder, final Trip model, int position) {
-                //need to update to filter based on trips that the current user is memeber of
-                //add in logic of for colorcoding mutual trips
-              //  Log.d("userstrips", usersTrips.toString());
-                if(usersTrips.contains(model.getId())){
-                final DatabaseReference savedRef = getRef(position);
-                final String key = savedRef.getKey();
-                viewHolder.setImage(model.getPhoto());
+        try {
+            fireAdapter = new FirebaseRecyclerAdapter<Trip, TripHolder>(Trip.class, R.layout.trip_list, TripHolder.class, query) {
+                @Override
+                protected void populateViewHolder(TripHolder viewHolder, final Trip model, int position) {
+                    //need to update to filter based on trips that the current user is memeber of
+                    //add in logic of for colorcoding mutual trips
+                    //  Log.d("userstrips", usersTrips.toString());
+                    if (usersTrips.contains(model.getId())) {
+                        final DatabaseReference savedRef = getRef(position);
+                        final String key = savedRef.getKey();
+                        viewHolder.setImage(model.getPhoto());
 
-                if(user.getUid().equals( model.getCreator()) && user.getUid().equals(userID)){
-                    viewHolder.setColor();
-                    viewHolder.youOwn();
-                    viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View v) {
-                            tripsRef.child(key).removeValue();
+                        if (user.getUid().equals(model.getCreator()) && user.getUid().equals(userID)) {
+                            viewHolder.setColor();
+                            viewHolder.youOwn();
+                            viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                                @Override
+                                public boolean onLongClick(View v) {
+                                    alert =  new AlertDialog.Builder(getActivity());
+                                    alert.setMessage("Are you sure you want to Delete this Trip")
+                                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.cancel();
+                                                }
+                                            })
+                                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
 
-                            return false;
+                                                }
+                                            });
+
+
+                                    tripsRef.child(key).removeValue();
+
+                                    return false;
+                                }
+                            });
+                            // Log.d( "populateViewHolder: ",model.getName());
+
+                        } else if (user.getUid().equals(model.getCreator())) {
+                            viewHolder.youOwn();
                         }
-                    });
-                   // Log.d( "populateViewHolder: ",model.getName());
+                        viewHolder.setName(model.getName());
 
-                }else if(user.getUid().equals( model.getCreator())){
-                    viewHolder.youOwn();
-                }
-                viewHolder.setName(model.getName());
+                        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                mUserRetrival.startTripFragment(model.getId());
+                            }
+                        });
 
-                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                            mUserRetrival.startTripFragment( model.getId());
+
+                    } else {
+                        RecyclerView.LayoutParams param = (RecyclerView.LayoutParams) viewHolder.itemView.getLayoutParams();
+                        param.width = 0;
+                        param.height = 0;
+                        viewHolder.itemView.setLayoutParams(param);
+
                     }
-                });
-
-
-            }else{
-                    RecyclerView.LayoutParams param = (RecyclerView.LayoutParams)viewHolder.itemView.getLayoutParams();
-                    param.width = 0;
-                    param.height = 0;
-                    viewHolder.itemView.setLayoutParams(param);
-
                 }
-            }
-        };
-        mLayoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLongClickable(true);
-        recyclerView.setHasFixedSize(false);
-        recyclerView.setLayoutManager(mLayoutManager);
+            };
 
-        recyclerView.setAdapter(fireAdapter);
+            mLayoutManager = new LinearLayoutManager(getContext());
+            recyclerView.setLongClickable(true);
+            recyclerView.setHasFixedSize(false);
+            recyclerView.setLayoutManager(mLayoutManager);
 
+            recyclerView.setAdapter(fireAdapter);
+        } catch (IndexOutOfBoundsException e) {
+            populateUserTrips();
+            e.printStackTrace();
 
-
+        }
 
     }
+
+
+
     public void populateDatabase(){
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mUserRef = mDatabase.child("users").child(userID);
         tripUserRef = mDatabase.child("users");
-       // Log.d( "onActivityCreated: ", userID);
-        mUserRef.addValueEventListener(new ValueEventListener() {
+        // Log.d( "onActivityCreated: ", userID);
+        userListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 viewUser = dataSnapshot.getValue(User.class);
-               // Log.d( "onDataChange: ", viewUser.toString());
+                // Log.d( "onDataChange: ", viewUser.toString());
                 populateUserProfile();
-
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        };
+        mUserRef.addValueEventListener(userListener);
 
         tripsRef = mDatabase.child("trips");
-        tripsRef.addValueEventListener(new ValueEventListener() {
+        tripListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -282,14 +322,15 @@ public class UserFragment extends Fragment {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        };
+        tripsRef.addValueEventListener(tripListener);
         usersMemberTrips = mDatabase.child("tripMembers");
-        ValueEventListener membersListener = new ValueEventListener() {
+        membersListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for( DataSnapshot snaps : dataSnapshot.getChildren()){
                     if(snaps.child(userID).exists()){
-                       // Log.d("Adding", snaps.getKey());
+                        // Log.d("Adding", snaps.getKey());
                         usersTrips.add(snaps.getKey());
                     }
                 }
