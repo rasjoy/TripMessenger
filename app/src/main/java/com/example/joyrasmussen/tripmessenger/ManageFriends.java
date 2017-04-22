@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -112,6 +113,7 @@ public class ManageFriends extends AppCompatActivity implements UserFragment.OnF
                     friendID = peopleToIds.get(approvePeople.get(i));
                 }
 
+
                 UserFragment fragment = new UserFragment();
                 Bundle bundle = new Bundle();
                 bundle.putString("UserID", friendID);
@@ -119,6 +121,8 @@ public class ManageFriends extends AppCompatActivity implements UserFragment.OnF
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.manage_friends, fragment, "user")
                         .addToBackStack(null).commit();
+
+
             }
         });
 
