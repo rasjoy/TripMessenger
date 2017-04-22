@@ -275,7 +275,7 @@ public class ViewTripFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 thisTrip = dataSnapshot.getValue(Trip.class);
-
+                populateEverything();
                 location.setText(thisTrip.getLocation());
                 name.setText(thisTrip.getName());
                 final String creator =thisTrip.getCreator();
@@ -355,16 +355,7 @@ public class ViewTripFragment extends Fragment {
 
     private void populateImage(String url){
         if(url != null && !url.equals("")) {
-
-            Picasso.Builder builder = new Picasso.Builder(image.getContext());
-            builder.listener(new Picasso.Listener() {
-                @Override
-                public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
-                    exception.printStackTrace();
-                    Log.i("uri: ", uri + "");
-                }
-            });
-            builder.build().load(url).into(image);
+            Picasso.with(getContext()).load(url).into(image);
         }
     }
 

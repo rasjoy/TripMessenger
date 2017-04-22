@@ -1,5 +1,7 @@
 package com.example.joyrasmussen.tripmessenger;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +20,8 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,11 +31,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class ChatRoom extends AppCompatActivity {
     private String chatID;
@@ -40,18 +48,20 @@ public class ChatRoom extends AppCompatActivity {
     DatabaseReference postReferences;
     DatabaseReference deleteReference, userReference;
     ValueEventListener tripListener, postListener, deleteListener, userListener;
-    FirebaseUser user;
     RecyclerView postRecycler;
-    ArrayList<String> isVisible;
+    ArrayList<String> isInvisible;
     EditText message;
-    ImageView image;
+    ImageView image, postImage;
     User currentUser;
     User postUser;
+    StorageReference storageRef;
     TextView name, location;
     FirebaseRecyclerAdapter<Message, ChatPostHolder> mAdapter;
     Query query;
     private FirebaseAuth mAuth;
+    FirebaseUser user;
     Trip thisTrip;
+    Uri filePath;
     private FirebaseAuth.AuthStateListener mAuthListener;
     LinearLayoutManager mLayoutManager;
 
@@ -62,22 +72,22 @@ public class ChatRoom extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
         chatID = getIntent().getStringExtra("chatID");
-
+        isInvisible = new ArrayList<>();
         populate();
 
     }
 
     private void populate(){
         tripReference = mDatabase.child("trips").child(chatID);
-        postReferences = mDatabase.child("chat").child(chatID);
+        postReferences = mDatabase.child("posts").child(chatID);
         message = (EditText) findViewById(R.id.messageEditTextChat);
         image = (ImageView) findViewById(R.id.tripImage);
         name = (TextView) findViewById(R.id.chatTripName);
+        postImage = (ImageView) findViewById(R.id.imageToPost);
         postRecycler = (RecyclerView) findViewById(R.id.chatRoomRecycler);
         location = (TextView) findViewById(R.id.tripLocation);
         deleteReference = mDatabase.child("deleteChats").child(chatID);
         userReference = mDatabase.child("users");
-        setmAdapter();
 
 
     }
@@ -114,71 +124,100 @@ public class ChatRoom extends AppCompatActivity {
                 ChatPostHolder.class, query) {
             @Override
             protected void populateViewHolder(final ChatPostHolder viewHolder, final Message model, int position) {
-                viewHolder.setImage(model.getImageURL());
-                viewHolder.setPost(model.getText());
-                viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        deleteReference.child(model.getId()).setValue(true);
-                        mAdapter.notifyDataSetChanged();
-                        return false;
+                if(!isInvisible.contains(model.getId())) {
+                    viewHolder.setImage(model.getImageURL());
+                    viewHolder.setPost(model.getText());
+                    try {
+                        viewHolder.setTime(model.getTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
                     }
-                });
-               deleteReference.child(model.getId()).addValueEventListener(new ValueEventListener() {
-                   @Override
-                   public void onDataChange(DataSnapshot dataSnapshot) {
-                        if(!dataSnapshot.child(currentUser.getId()).exists()){
-
-                            //viewHolder.setUser(mode);
-
-                            try {
-                                viewHolder.setTime(model.getTime());
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-                           if(model.getId().equals(currentUser.getId())){
-                               viewHolder.setUser(currentUser.getFirstName() + " " + currentUser.getLastName());
-
-                           }else{
-                               userReference.child(model.getUsrId()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                   @Override
-                                   public void onDataChange(DataSnapshot dataSnapshot) {
-                                       User thisUser = dataSnapshot.getValue(User.class);
-                                       viewHolder.setUser(thisUser.getFirstName() + " " + thisUser.getLastName());
-                                   }
-
-                                   @Override
-                                   public void onCancelled(DatabaseError databaseError) {
-
-                                   }
-                               });
-
-                           }
-
+                    viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            deleteReference.child(model.getId()).child(user.getUid()).setValue(true);
+                            mAdapter.notifyDataSetChanged();
+                            return false;
                         }
-                   }
+                    });
+                    if (model.getUsrId().equals(user.getUid())) {
+                        viewHolder.setUser("You");
 
-                   @Override
-                   public void onCancelled(DatabaseError databaseError) {
+                    } else {
+                        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                User thisUser = dataSnapshot.child(model.getUsrId()).getValue(User.class);
+                                viewHolder.setUser(thisUser.getFirstName() + " " + thisUser.getLastName());
+                            }
 
-                   }
-               });
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+                    }
+                }else{
+                    RecyclerView.LayoutParams param = (RecyclerView.LayoutParams)viewHolder.itemView.getLayoutParams();
+                    param.width = 0;
+                    param.height = 0;
+                    viewHolder.itemView.setLayoutParams(param);
+
+                }
             }
         };
 
         mLayoutManager = new LinearLayoutManager(this);
         postRecycler.setHasFixedSize(false);
         postRecycler.setLayoutManager(mLayoutManager);
+        postRecycler.setLongClickable(true);
         postRecycler.setAdapter(mAdapter);
 
     }
 
     public void onGalleryListener(View v){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_PICK);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), 111);
 
 
     }
     public void onSentMessage(View v){
 
+            final Message newMessage = new Message();
+            newMessage.setId(UUID.randomUUID().toString());
+            newMessage.setTime( System.currentTimeMillis());
+            newMessage.setUsrId(user.getUid());
+
+
+
+            if(filePath != null){
+
+                StorageReference avatarRef = storageRef.child("postImages/" + newMessage.getId() + ".png");
+                UploadTask uploadTask = avatarRef.putFile(filePath);
+
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                        Toast.makeText(ChatRoom.this, "Image upload failure", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            hidePostImage();
+                            postReferences.child(newMessage.getId()).setValue(newMessage);
+
+                    }
+                });
+
+            }else{
+
+
+
+            }
 
     }
 
@@ -188,6 +227,7 @@ public class ChatRoom extends AppCompatActivity {
         super.onStart();
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+        Log.d("Onstart", user.getUid());
         authListener();
         mAuth.addAuthStateListener(mAuthListener);
         ValueEventListener listen = new ValueEventListener() {
@@ -196,6 +236,7 @@ public class ChatRoom extends AppCompatActivity {
                 thisTrip = dataSnapshot.getValue(Trip.class);
                 name.setText(thisTrip.getName());
                 location.setText(thisTrip.getLocation());
+                setTripImage(thisTrip.getPhoto());
                 String creator =thisTrip.getCreator();
 
             }
@@ -208,6 +249,7 @@ public class ChatRoom extends AppCompatActivity {
         ValueEventListener postListen = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                setmAdapter();
 
             }
 
@@ -217,14 +259,16 @@ public class ChatRoom extends AppCompatActivity {
             }
         };
         tripReference.addValueEventListener(listen);
-        postReferences.addListenerForSingleValueEvent(postListen);
+        postReferences.addValueEventListener(postListen);
         tripListener = listen;
         postListener = postListen;
         ValueEventListener deleteListen = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot snaps : dataSnapshot.getChildren()) {
-
+                        if(snaps.child(user.getUid()).exists()){
+                            isInvisible.add(snaps.getKey());
+                        }
                 }
             }
 
@@ -284,6 +328,30 @@ public class ChatRoom extends AppCompatActivity {
 
         }
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 111 && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            filePath = data.getData();
+            setPostImage(filePath.toString());
+           // setImage(filePath.toString());
+            Toast.makeText(this, "Don't forget to hit send to upload image", Toast.LENGTH_SHORT).show();
 
+        }
+    }
+    private void setTripImage(String url){
+        if(url != null && !url.equals("")) {
+            Picasso.with(this).load(url).into(image);
+        }
+    }
+    private void setPostImage(String url){
+        if(url != null && !url.equals("")){
+            postImage.setVisibility(View.VISIBLE);
+            Picasso.with(this).load(url).into(postImage);
+        }
+    }
+    private void hidePostImage(){
+        postImage.setVisibility(View.GONE);
+    }
 
 }

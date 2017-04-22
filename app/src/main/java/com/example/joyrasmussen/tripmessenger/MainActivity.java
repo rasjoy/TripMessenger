@@ -42,6 +42,46 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
         userReference = mDatabase.child("users");
         tripReference = mDatabase.child("trips");
 
+
+    }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.signOutMainMenu:
+                AuthUI.getInstance().signOut(this)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    user = null;
+                                    Toast.makeText(MainActivity.this, "Sign out was successful", Toast.LENGTH_LONG).show();
+                                } else {
+
+                                }
+                            }
+                        });
+                getSupportFragmentManager().popBackStack();
+
+                return true;
+            case R.id.mangageFriendsMain:
+                Intent mf = new Intent(this, ManageFriends.class);
+                startActivity(mf);
+                return true;
+            case R.id.editProfileMain:
+                Intent i = new Intent(this, EditProfile.class);
+                startActivity(i);
+                return true;
+            default:
+                return true;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -69,54 +109,18 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
 
                         }
                     });
-                        //start edit profile automatically
+                    //start edit profile automatically
                 } else {
                     getSupportFragmentManager().beginTransaction()
                             .add(R.id.main_activity, new SignInFragment(), "first" ).commit();
                 }
             }
         };
-    }
-
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.signOutMainMenu:
-                AuthUI.getInstance().signOut(this)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(MainActivity.this, "Sign out was successful", Toast.LENGTH_LONG).show();
-                                } else {
-
-                                }
-                            }
-                        });
-                getSupportFragmentManager().popBackStack();
-
-                return true;
-            case R.id.mangageFriendsMain:
-                Intent mf = new Intent(this, ManageFriends.class);
-                startActivity(mf);
-                return true;
-            case R.id.editProfileMain:
-                Intent i = new Intent(this, EditProfile.class);
-                startActivity(i);
-                return true;
-            default:
-                return true;
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         auth.addAuthStateListener(mAuthListener);
         userOnChangeListener();
     }
+
+
 
     @Override
     protected void onDestroy() {
@@ -126,10 +130,6 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
         }
     }
 
-    public void tripsChangeListener(){
-
-
-    }
     public void userOnChangeListener(){
         userReference.addValueEventListener(new ValueEventListener() {
             @Override
