@@ -4,6 +4,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -11,7 +13,9 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -37,7 +41,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-public class ManageFriends extends AppCompatActivity implements UserFragment.OnFragmentInteractionListener {
+public class ManageFriends extends Fragment {
 
 
 
@@ -64,22 +68,32 @@ public class ManageFriends extends AppCompatActivity implements UserFragment.OnF
     HashMap<String, String> peopleToIds;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_friends);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_manage_friends, container, false);
+    }
+
+    public ManageFriends() {
+        // Required empty public constructor
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+
+        super.onActivityCreated(savedInstanceState);
 
         pendingPeople = new ArrayList<String>();
         approvePeople = new ArrayList<String>();
         friends = new ArrayList<String>();
         peopleToIds = new HashMap<String, String>();
 
-        friendsTab = (TextView) findViewById(R.id.friendsTab);
-        pendingTab = (TextView) findViewById(R.id.pendingTab);
-        approveTab = (TextView) findViewById(R.id.approveTab);
+        friendsTab = (TextView) getView().findViewById(R.id.friendsTab);
+        pendingTab = (TextView) getView().findViewById(R.id.pendingTab);
+        approveTab = (TextView) getView().findViewById(R.id.approveTab);
 
-        listView = (ListView) findViewById(R.id.friendsListView);
+        listView = (ListView) getView().findViewById(R.id.friendsListView);
 
-        friendName = (EditText) findViewById(R.id.addFriendET);
+        friendName = (EditText) getView().findViewById(R.id.addFriendET);
 
         dbRef = FirebaseDatabase.getInstance().getReference();
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -114,13 +128,13 @@ public class ManageFriends extends AppCompatActivity implements UserFragment.OnF
                 }
 
 
-                UserFragment fragment = new UserFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("UserID", friendID);
-                fragment.setArguments(bundle);
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.manage_friends, fragment, "user")
-                        .addToBackStack(null).commit();
+//                UserFragment fragment = new UserFragment();
+//                Bundle bundle = new Bundle();
+//                bundle.putString("UserID", friendID);
+//                fragment.setArguments(bundle);
+//                getSupportFragmentManager().beginTransaction()
+//                        .replace(R.id.manage_friends, fragment, "user")
+//                        .addToBackStack(null).commit();
 
 
             }
@@ -135,7 +149,7 @@ public class ManageFriends extends AppCompatActivity implements UserFragment.OnF
     public void setFriends() {
 
         if (currentView.equals("Friends")) {
-            adapter = new ArrayAdapter<String>(ManageFriends.this, android.R.layout.simple_list_item_1, friends);
+            adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, friends);
             adapter.setNotifyOnChange(true);
             listView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
@@ -144,7 +158,7 @@ public class ManageFriends extends AppCompatActivity implements UserFragment.OnF
                 @Override
                 public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int index, long l) {
 
-                    new AlertDialog.Builder(ManageFriends.this)
+                    new AlertDialog.Builder(getContext())
                             .setMessage("Delete friend?")
                             .setCancelable(false)
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -214,7 +228,7 @@ public class ManageFriends extends AppCompatActivity implements UserFragment.OnF
     public void setApprove() {
 
         if (currentView.equals("Approve")) {
-            adapter = new ArrayAdapter<String>(ManageFriends.this, android.R.layout.simple_list_item_1, approvePeople);
+            adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, approvePeople);
             adapter.setNotifyOnChange(true);
             listView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
@@ -224,7 +238,7 @@ public class ManageFriends extends AppCompatActivity implements UserFragment.OnF
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int index, long l) {
 
-                new AlertDialog.Builder(ManageFriends.this)
+                new AlertDialog.Builder(getContext())
                         .setMessage("Accept friend request?")
                         .setCancelable(false)
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -300,7 +314,7 @@ public class ManageFriends extends AppCompatActivity implements UserFragment.OnF
     public void setPending() {
 
         if (currentView.equals("Pending")) {
-            adapter = new ArrayAdapter<String>(ManageFriends.this, android.R.layout.simple_list_item_1, pendingPeople);
+            adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, pendingPeople);
             adapter.setNotifyOnChange(true);
             listView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
@@ -350,10 +364,10 @@ public class ManageFriends extends AppCompatActivity implements UserFragment.OnF
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//    }
 
     public void add(View v) {
 
@@ -372,7 +386,7 @@ public class ManageFriends extends AppCompatActivity implements UserFragment.OnF
                     //put the friends ID in this user's pending stuff
                     dbRef.child("pending").child(userID).child(thisSnapshot.getKey()).setValue("true");
 
-                    Toast.makeText(ManageFriends.this, "Friend request sent", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Friend request sent", Toast.LENGTH_SHORT).show();
                     friendName.setText("");
                 }
             }
@@ -387,7 +401,7 @@ public class ManageFriends extends AppCompatActivity implements UserFragment.OnF
 
     public void search(View v) {
 
-        Intent i = new Intent(this, FindFriends.class);
+        Intent i = new Intent(getContext(), FindFriends.class);
         startActivity(i);
     }
 
@@ -397,7 +411,7 @@ public class ManageFriends extends AppCompatActivity implements UserFragment.OnF
             case "Friends":
                 currentView = "Friends";
                 setFriends();
-                friendsTab.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+                friendsTab.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
                 pendingTab.setTextColor(Color.BLACK);
                 approveTab.setTextColor(Color.BLACK);
 
@@ -405,7 +419,7 @@ public class ManageFriends extends AppCompatActivity implements UserFragment.OnF
             case "Pending":
                 currentView = "Pending";
                 setPending();
-                pendingTab.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+                pendingTab.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
                 friendsTab.setTextColor(Color.BLACK);
                 approveTab.setTextColor(Color.BLACK);
 
@@ -413,7 +427,7 @@ public class ManageFriends extends AppCompatActivity implements UserFragment.OnF
             case "Approve":
                 currentView = "Approve";
                 setApprove();
-                approveTab.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+                approveTab.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
                 friendsTab.setTextColor(Color.BLACK);
                 pendingTab.setTextColor(Color.BLACK);
 
