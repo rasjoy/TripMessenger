@@ -43,9 +43,10 @@ public class ChatPostHolder extends RecyclerView.ViewHolder{
     }
     public void setPost(String postText){
         if(postText != null && postText.equals("")){
-            post.setText(postText);
-        }else{
             post.setVisibility(View.GONE);
+        }else{
+            post.setText(postText);
+
         }
     }
     public void setImage(String url){

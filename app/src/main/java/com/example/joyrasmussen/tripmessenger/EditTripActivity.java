@@ -172,7 +172,7 @@ public class EditTripActivity extends AppCompatActivity {
 
             }
         });*/
-        Log.d( "onEditListener: ", filePath.toString() + "");
+//        Log.d( "onEditListener: ", filePath.toString() + "");
         if(filePath != null) {
             try {
 

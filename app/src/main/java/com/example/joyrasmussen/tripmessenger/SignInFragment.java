@@ -1,6 +1,7 @@
 package com.example.joyrasmussen.tripmessenger;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -123,7 +124,8 @@ public class SignInFragment extends Fragment  implements  GoogleApiClient.OnConn
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == MainActivity.SIGN_IN) {
+        //Log.d("onActivityResult: ", resultCode + "");
+        if (requestCode == MainActivity.SIGN_IN && resultCode == Activity.RESULT_OK) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             AuthCredential credential = GoogleAuthProvider.getCredential(result.getSignInAccount().getIdToken(), null);
             auth.signInWithCredential(credential)
@@ -134,7 +136,7 @@ public class SignInFragment extends Fragment  implements  GoogleApiClient.OnConn
                            progress.setVisibility(View.INVISIBLE);
                             //Log.d( "onComplete: ", "signed in" + auth.getCurrentUser().toString());
                             Toast.makeText(getActivity(), "Sucessfully logged in as " + auth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
-                            getActivity().getSupportFragmentManager().beginTransaction().remove(SignInFragment.this).commit();
+                          //  getActivity().getSupportFragmentManager().beginTransaction().remove(SignInFragment.this).commit();
 
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -145,6 +147,9 @@ public class SignInFragment extends Fragment  implements  GoogleApiClient.OnConn
                     Toast.makeText(getActivity(), "Log in Failed", Toast.LENGTH_SHORT).show();
                 }
             });
+        }else {
+         progress.setVisibility(View.GONE);
+
         }
     }
 

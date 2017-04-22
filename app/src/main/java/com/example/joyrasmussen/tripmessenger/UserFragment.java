@@ -230,7 +230,7 @@ public class UserFragment extends Fragment {
                                 @Override
                                 public boolean onLongClick(View v) {
                                     alert =  new AlertDialog.Builder(getActivity());
-                                    alert.setMessage("Are you sure you want to Delete this Trip")
+                                    alert.setMessage("Are you sure you want to delete this Trip?")
                                             .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
@@ -240,12 +240,13 @@ public class UserFragment extends Fragment {
                                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
-
+                                                    tripsRef.child(key).removeValue();
+                                                    usersMemberTrips.child(key).removeValue();
                                                 }
                                             });
 
 
-                                    tripsRef.child(key).removeValue();
+                                  alert.show();
 
                                     return false;
                                 }

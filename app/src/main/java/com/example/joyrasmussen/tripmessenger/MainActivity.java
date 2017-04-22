@@ -100,12 +100,6 @@ public class MainActivity extends AppCompatActivity implements ManageFriends.OnF
     @Override
     protected void onStart() {
         set();
-        super.onStart();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -138,13 +132,22 @@ public class MainActivity extends AppCompatActivity implements ManageFriends.OnF
                     //start edit profile automatically
                 } else {
 
-                   // getSupportFragmentManager().popBackStack("sign", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    // getSupportFragmentManager().popBackStack("sign", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
                     signinFragment();
+
                 }
             }
         };
         auth.addAuthStateListener(mAuthListener);
         userOnChangeListener();
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
     }
 
 
@@ -197,10 +200,13 @@ public class MainActivity extends AppCompatActivity implements ManageFriends.OnF
                 .addToBackStack(null).commit();
     }
 
-    private void signinFragment(){
-        Log.d( "signinFragment: ", "yo");
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.main_activity, new SignInFragment(), "first" ).addToBackStack("sign").commit();
+    private void signinFragment() {
+        if (getSupportFragmentManager().findFragmentByTag("first") == null && getSupportFragmentManager().getBackStackEntryCount() == 0) {
+            Log.d("signinFragment: ", "yo");
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.main_activity, new SignInFragment(), "first").addToBackStack("sign").commit();
+        }
     }
 
 
