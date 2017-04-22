@@ -28,7 +28,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class MainActivity extends AppCompatActivity implements SignInFragment.OnFragmentInteractionListener,ViewTripFragment.OnFragmentInteractionListener, UserFragment.OnFragmentInteractionListener, UserRetrival, TripRetrival, GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity implements ManageFriends.OnFragmentInteractionListener,SignInFragment.OnFragmentInteractionListener,ViewTripFragment.OnFragmentInteractionListener, UserFragment.OnFragmentInteractionListener, UserRetrival, TripRetrival, GoogleApiClient.OnConnectionFailedListener {
     FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     FirebaseUser user;
@@ -82,8 +82,11 @@ public class MainActivity extends AppCompatActivity implements SignInFragment.On
 
                 return true;
             case R.id.mangageFriendsMain:
-                Intent mf = new Intent(this, ManageFriends.class);
-                startActivity(mf);
+//                Intent mf = new Intent(this, ManageFriends.class);
+//                startActivity(mf);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_activity, new ManageFriends(), "user")
+                        .addToBackStack(null).commit();
                 return true;
             case R.id.editProfileMain:
                 Intent i = new Intent(this, EditProfile.class);
