@@ -36,10 +36,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-public class ManageFriends extends AppCompatActivity {
+public class ManageFriends extends AppCompatActivity implements UserFragment.OnFragmentInteractionListener {
 
-    ArrayList<String> pending;
-    ArrayList<String> approval;
+
 
     EditText friendName;
     User userObject;
@@ -102,12 +101,30 @@ public class ManageFriends extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(ManageFriends.this, "placeholder", Toast.LENGTH_SHORT).show();
+
+                String friendID;
+
+                if(currentView.equals("Friends")) {
+                    friendID = peopleToIds.get(friends.get(i));
+                } else if (currentView.equals("Pending")){
+                    friendID = peopleToIds.get(pendingPeople.get(i));
+                } else {
+                    friendID = peopleToIds.get(approvePeople.get(i));
+                }
+
+                UserFragment fragment = new UserFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("UserID", friendID);
+                fragment.setArguments(bundle);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.manage_friends, fragment, "user")
+                        .addToBackStack(null).commit();
             }
         });
 
         currentView = "Friends";
         setFriends();
+
 
     }
 
@@ -198,6 +215,41 @@ public class ManageFriends extends AppCompatActivity {
             listView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
         }
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int index, long l) {
+
+                new AlertDialog.Builder(ManageFriends.this)
+                        .setMessage("Accept friend request?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                String friendID = peopleToIds.get(approvePeople.get(index));
+                                dbRef.child("friends").child(userID).child(friendID).setValue("true");
+                                dbRef.child("friends").child(friendID).child(userID).setValue("true");
+
+                                dbRef.child("approval").child(userID).child(friendID).removeValue();
+
+                                dbRef.child("pending").child(friendID).child(userID).removeValue();
+
+                                approvePeople.remove(index);
+                                adapter.notifyDataSetChanged();
+
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        }).create().show();
+
+                return true; //Necessary
+            }
+        });
 
         final DatabaseReference approveRef = dbRef.child("approval").child(userID);
 
