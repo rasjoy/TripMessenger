@@ -28,7 +28,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class MainActivity extends AppCompatActivity implements SignInFragment.OnFragmentInteractionListener,ViewTripFragment.OnFragmentInteractionListener, UserFragment.OnFragmentInteractionListener, UserRetrival, TripRetrival, GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity implements ManageFriends.OnFragmentInteractionListener,SignInFragment.OnFragmentInteractionListener,ViewTripFragment.OnFragmentInteractionListener, UserFragment.OnFragmentInteractionListener, UserRetrival, TripRetrival, GoogleApiClient.OnConnectionFailedListener {
     FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     FirebaseUser user;

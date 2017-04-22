@@ -1,5 +1,6 @@
 package com.example.joyrasmussen.tripmessenger;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -43,7 +44,7 @@ import java.util.ListIterator;
 
 public class ManageFriends extends Fragment {
 
-
+    UserRetrival mUserRetrival;
 
     EditText friendName;
     User userObject;
@@ -75,6 +76,19 @@ public class ManageFriends extends Fragment {
 
     public ManageFriends() {
         // Required empty public constructor
+    }
+    public interface OnFragmentInteractionListener{
+
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mUserRetrival = (UserRetrival) context;
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -128,14 +142,7 @@ public class ManageFriends extends Fragment {
                 }
 
 
-//                UserFragment fragment = new UserFragment();
-//                Bundle bundle = new Bundle();
-//                bundle.putString("UserID", friendID);
-//                fragment.setArguments(bundle);
-//                getSupportFragmentManager().beginTransaction()
-//                        .replace(R.id.manage_friends, fragment, "user")
-//                        .addToBackStack(null).commit();
-
+                mUserRetrival.startCLickedUserFragment(friendID);
 
             }
         });
