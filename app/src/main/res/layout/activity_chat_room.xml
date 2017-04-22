@@ -97,8 +97,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.05"
             android:ems="10"
-            android:inputType="textPersonName"
-            android:text="@string/post" />
+            android:hint="@string/post"
+            android:inputType="textPersonName" />
 
         <ImageButton
             android:id="@+id/sendButtonChat"
