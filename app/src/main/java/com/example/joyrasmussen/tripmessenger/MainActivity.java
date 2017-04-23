@@ -50,6 +50,48 @@ public class MainActivity extends AppCompatActivity implements ManageFriends.OnF
         userReference = mDatabase.child("users");
         tripReference = mDatabase.child("trips");
 
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    Log.d( "onAuthStateChanged: ", "signed in");
+                    userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.hasChild(user.getUid())){
+                                Log.d( "onDataChange: ", "user is in database");
+                                getSupportFragmentManager().beginTransaction()
+                                        .replace(R.id.main_activity, new UserFragment(), "user")
+                                        .addToBackStack(null).commit();
+
+
+
+                            }else {
+                                Toast.makeText(MainActivity.this, "Please complete your profile", Toast.LENGTH_LONG).show();
+                                Intent i = new Intent(MainActivity.this, EditProfile.class);
+                                startActivity(i);
+                            }
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                    //start edit profile automatically
+                } else {
+
+                    // getSupportFragmentManager().popBackStack("sign", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+                    signinFragment();
+
+                }
+            }
+        };
+        auth.addAuthStateListener(mAuthListener);
+        userOnChangeListener();
+        set();
+
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -98,49 +140,15 @@ public class MainActivity extends AppCompatActivity implements ManageFriends.OnF
     }
 
     @Override
+    protected void onResumeFragments() {
+
+
+        super.onResumeFragments();
+    }
+
+    @Override
     protected void onStart() {
-        set();
 
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    Log.d( "onAuthStateChanged: ", "signed in");
-                    userReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if(dataSnapshot.hasChild(user.getUid())){
-                                Log.d( "onDataChange: ", "user is in database");
-                                getSupportFragmentManager().beginTransaction()
-                                        .replace(R.id.main_activity, new UserFragment(), "user")
-                                        .addToBackStack(null).commit();
-
-
-
-                            }else {
-                                Toast.makeText(MainActivity.this, "Please complete your profile", Toast.LENGTH_LONG).show();
-                                Intent i = new Intent(MainActivity.this, EditProfile.class);
-                                startActivity(i);
-                            }
-                        }
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-                    //start edit profile automatically
-                } else {
-
-                    // getSupportFragmentManager().popBackStack("sign", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-
-                    signinFragment();
-
-                }
-            }
-        };
-        auth.addAuthStateListener(mAuthListener);
-        userOnChangeListener();
         super.onStart();
     }
 

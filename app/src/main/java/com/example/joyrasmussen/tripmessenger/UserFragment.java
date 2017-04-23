@@ -214,10 +214,10 @@ public class UserFragment extends Fragment {
         try {
             fireAdapter = new FirebaseRecyclerAdapter<Trip, TripHolder>(Trip.class, R.layout.trip_list, TripHolder.class, query) {
                 @Override
-                protected void populateViewHolder(TripHolder viewHolder, final Trip model, int position) {
+                protected void populateViewHolder(final TripHolder viewHolder, final Trip model, int position) {
                     //need to update to filter based on trips that the current user is memeber of
                     //add in logic of for colorcoding mutual trips
-                    //  Log.d("userstrips", usersTrips.toString());
+                     Log.d("userstrips", usersTrips.toString());
                     if (usersTrips.contains(model.getId())) {
                         final DatabaseReference savedRef = getRef(position);
                         final String key = savedRef.getKey();
@@ -242,6 +242,7 @@ public class UserFragment extends Fragment {
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     tripsRef.child(key).removeValue();
                                                     usersMemberTrips.child(key).removeValue();
+                                                    mDatabase.child("deleteChats").child(key).removeValue();
                                                 }
                                             });
 
@@ -255,6 +256,43 @@ public class UserFragment extends Fragment {
 
                         } else if (user.getUid().equals(model.getCreator())) {
                             viewHolder.youOwn();
+                        }else{
+                            viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                                @Override
+                                public boolean onLongClick(View v) {
+                                    alert =  new AlertDialog.Builder(getActivity());
+                                    alert.setMessage("Do you want to join this trip?")
+                                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.cancel();
+                                                }
+                                            })
+                                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                   usersMemberTrips.child(model.getId()).child(user.getUid()).setValue(true);
+                                                }
+                                            });
+
+
+                                    alert.show();
+
+                                    return false;
+                                }
+                            });
+                           mUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                               @Override
+                               public void onDataChange(DataSnapshot dataSnapshot) {
+                                  User ownerz =  dataSnapshot.child(model.getCreator()).getValue(User.class);
+                                   viewHolder.setOwner(ownerz.getFirstName(), ownerz.getLastName());
+                               }
+
+                               @Override
+                               public void onCancelled(DatabaseError databaseError) {
+
+                               }
+                           });
                         }
                         viewHolder.setName(model.getName());
 
@@ -294,7 +332,7 @@ public class UserFragment extends Fragment {
 
     public void populateDatabase(){
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mUserRef = mDatabase.child("users").child(userID);
+        mUserRef = mDatabase.child("users");
         tripUserRef = mDatabase.child("users");
         // Log.d( "onActivityCreated: ", userID);
         userListener = new ValueEventListener() {
@@ -310,7 +348,7 @@ public class UserFragment extends Fragment {
 
             }
         };
-        mUserRef.addValueEventListener(userListener);
+        mUserRef.child(userID).addValueEventListener(userListener);
 
         tripsRef = mDatabase.child("trips");
         tripListener = new ValueEventListener() {
@@ -330,9 +368,12 @@ public class UserFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for( DataSnapshot snaps : dataSnapshot.getChildren()){
+
                     if(snaps.child(userID).exists()){
                         // Log.d("Adding", snaps.getKey());
-                        usersTrips.add(snaps.getKey());
+                       if(!usersTrips.contains(snaps.getKey())){
+                           usersTrips.add(snaps.getKey());
+                       }
                     }
                 }
                 populateUserTrips();
