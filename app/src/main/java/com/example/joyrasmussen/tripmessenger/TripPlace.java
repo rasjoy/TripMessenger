@@ -6,12 +6,12 @@ package com.example.joyrasmussen.tripmessenger;
 
 public class TripPlace {
     private String id, name;
-    private long lat, longitude;
+    private double lat, longitude;
 
     public TripPlace() {
     }
 
-    public TripPlace(String id, String name, long lat, long longitude) {
+    public TripPlace(String id, String name, double lat, double longitude) {
         this.id = id;
         this.name = name;
         this.lat = lat;
@@ -34,19 +34,19 @@ public class TripPlace {
         this.name = name;
     }
 
-    public long getLat() {
+    public double getLat() {
         return lat;
     }
 
-    public void setLat(long lat) {
+    public void setLat(double lat) {
         this.lat = lat;
     }
 
-    public long getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(long longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 }

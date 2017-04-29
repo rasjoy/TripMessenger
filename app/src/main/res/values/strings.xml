@@ -37,4 +37,5 @@
     <string name="tripsbelongto">Trips Belong To</string>
     <string name="tripMember">Trips:</string>
     <string name="logginInProgress">Log in In Progress</string>
+    <string name="addPlace">Add New Place</string>
 </resources>

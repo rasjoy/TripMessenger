@@ -24,6 +24,11 @@ import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,6 +46,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static android.app.Activity.RESULT_OK;
 
 
 /**
@@ -61,10 +68,10 @@ public class ViewTripFragment extends Fragment {
     DatabaseReference tripReference;
     DatabaseReference mDatabase;
     DatabaseReference userReference;
-
+    DatabaseReference placeReference;
     String tripID;
     ValueEventListener tripListener;
-    ValueEventListener memberListener;
+    ValueEventListener memberListener, placeListener;
     List<Object> whoIsAMember = new ArrayList<>();
     boolean isOwner;
     DatabaseReference membersReference;
@@ -72,6 +79,7 @@ public class ViewTripFragment extends Fragment {
     Query query;
     String viewUser;
     UserRetrival mTripRetrival;
+
 
 
 
@@ -109,16 +117,27 @@ public class ViewTripFragment extends Fragment {
                 Intent intent1 = new Intent(getContext(), ChatRoom.class);
                 intent1.putExtra("chatID", tripID);
                 startActivity(intent1);
-
+                Log.d( "onOptionsItemSelected: ", "chat");
                 return true;
             case R.id.edtiTripView:
                 Intent intent = new Intent(getContext(), EditTripActivity.class);
                 intent.putExtra("tripID", tripID);
                 startActivity(intent);
+                Log.d( "onOptionsItemSelected: ", "edit");
 
                 return true;
+            case R.id.tripAddPlace:
+                try {
+                    addPlaces();
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    e.printStackTrace();
+                } catch (GooglePlayServicesRepairableException e) {
+                    e.printStackTrace();
+                }
+                Log.d( "onOptionsItemSelected: ", "place");
+                return true;
             default:
-                return  true;
+                return  false;
 
         }
     }
@@ -167,7 +186,7 @@ public class ViewTripFragment extends Fragment {
         owner = (TextView) getView().findViewById(R.id.ownerETtripView);
         image = (ImageView) getView().findViewById(R.id.tripViewImage);
         setOnclickListeners();
-
+        placeReference = mDatabase.child("tripPlaces").child(tripID);
         tripReference = mDatabase.child("trips").child(tripID);
         membersReference = mDatabase.child("tripMembers").child(tripID);
         userReference = mDatabase.child("users");
@@ -322,6 +341,18 @@ public class ViewTripFragment extends Fragment {
         };
         membersReference.addValueEventListener(listenMembers);
         memberListener = listenMembers;
+        placeListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        placeReference.addValueEventListener(placeListener);
 
 
 
@@ -356,6 +387,9 @@ public class ViewTripFragment extends Fragment {
         if(tripListener != null){
             tripReference.removeEventListener(tripListener);
         }
+        if(placeListener != null){
+            placeReference.removeEventListener(placeListener);
+        }
     }
     private void authListener(){
 
@@ -372,5 +406,29 @@ public class ViewTripFragment extends Fragment {
         };
 
     }
+    private void addPlaces() throws GooglePlayServicesNotAvailableException, GooglePlayServicesRepairableException {
 
+        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+        Log.d( "addPlaces: ", "this part works");
+
+        startActivityForResult(builder.build(getActivity()), MainActivity.PLACE_PICKER_REQUEST);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == MainActivity.PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+            Place place = PlacePicker.getPlace(data, getActivity());
+                if(place != null){
+                    LatLng latLong = place.getLatLng();
+                    TripPlace myPlace = new TripPlace(place.getId(), place.getName().toString(), latLong.latitude, latLong.longitude);
+                    placeReference.child(myPlace.getId()).setValue(myPlace);
+
+                }
+
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }

@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements ManageFriends.OnF
     String tripID;
     GoogleSignInOptions gso;
      static final int SIGN_IN = 123;
+    static final int PLACE_PICKER_REQUEST =12;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +124,12 @@ public class MainActivity extends AppCompatActivity implements ManageFriends.OnF
 
 
                 return true;
+            case R.id.edtiTripView:
+                return false;
+            case R.id.goToChatMenuTrip:
+                return false;
+            case R.id.tripAddPlace:
+                return false;
             case R.id.mangageFriendsMain:
 //                Intent mf = new Intent(this, ManageFriends.class);
 //                startActivity(mf);
@@ -264,5 +271,8 @@ public class MainActivity extends AppCompatActivity implements ManageFriends.OnF
         Toast.makeText(this, "Sign out was successful", Toast.LENGTH_SHORT).show();
 
     }
+
+
+
     }
 
