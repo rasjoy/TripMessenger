@@ -420,6 +420,7 @@ public class ViewTripFragment extends Fragment {
             if (resultCode == RESULT_OK) {
             Place place = PlacePicker.getPlace(data, getActivity());
                 if(place != null){
+                    Log.d("result", "there is a place");
                     LatLng latLong = place.getLatLng();
                     TripPlace myPlace = new TripPlace(place.getId(), place.getName().toString(), latLong.latitude, latLong.longitude);
                     placeReference.child(myPlace.getId()).setValue(myPlace);
