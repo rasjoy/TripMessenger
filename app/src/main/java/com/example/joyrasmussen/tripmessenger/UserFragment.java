@@ -348,7 +348,7 @@ public class UserFragment extends Fragment {
 
             }
         };
-        mUserRef.child(userID).addValueEventListener(userListener);
+        mUserRef.child(userID) .addValueEventListener(userListener);
 
         tripsRef = mDatabase.child("trips");
         tripListener = new ValueEventListener() {
