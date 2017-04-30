@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -40,6 +41,7 @@ public class EditTripActivity extends AppCompatActivity {
     EditText name, location;
     Trip thisTrip;
     private DatabaseReference mDatabase, tripReference;
+    Button editButton;
     FirebaseUser user;
     FirebaseStorage storage;
     StorageReference storageRef;
@@ -62,10 +64,13 @@ public class EditTripActivity extends AppCompatActivity {
         populateViews();
     }
     public void populateViews(){
+        editButton = (Button) findViewById(R.id.updateTripButton);
         if(tripID.equals("") || tripID== null){
             tripID = UUID.randomUUID().toString();
+            editButton.setText("Create Trip");
         }
         tripReference = mDatabase.child("trips");
+
 
 
         name = (EditText) findViewById(R.id.tripNameETEditTrip);
@@ -79,10 +84,12 @@ public class EditTripActivity extends AppCompatActivity {
                     name.setText(thisTrip.getName());
                     if (thisTrip.getLocation() != null) {
                         location.setText(thisTrip.getLocation());
+                        location.setEnabled(false);
                     }
                     setImage(thisTrip.getPhoto());
                 }else{
                     thisTrip = new Trip(tripID);
+
 
                 }
             }
@@ -153,10 +160,90 @@ public class EditTripActivity extends AppCompatActivity {
         finish();
     }
     public void onEditListener(View v){
+
+        String tripLocation = location.getText().toString();
+        if(!location.isEnabled()) {
+            thisTrip.setName(name.getText().toString());
+            thisTrip.setLocation(tripLocation);
+            thisTrip.setCreator(user.getUid());
+            final DatabaseReference tripMembers = mDatabase.child("tripMembers").child(tripID);
+            tripMembers.child(user.getUid()).setValue(true);
+        /*tripMembers.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String userz = dataSnapshot.child(user.getUid()).getKey();
+
+                Log.d( "onDataChange: ", "tripMembers" + userz);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });*/
+//        Log.d( "onEditListener: ", filePath.toString() + "");
+            if (filePath != null) {
+                try {
+
+                    Log.d("onEditListener: ", "uploading" + tripID);
+                    StorageReference avatarRef = storageRef.child("tripimages/" + tripID + ".png");
+
+                    UploadTask uploadTask = avatarRef.putFile(filePath);
+
+                    uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                            @SuppressWarnings("VisibleForTests") String downloadUrl = taskSnapshot.getDownloadUrl().toString();
+
+                            //mDatabase.child("users").child(userID).child("imageURL").setValue(downloadUrl);
+
+
+                            Log.d("image: ", downloadUrl);
+                            //path = "images/" + userID + ".png";
+
+                            //setImage(downloadUrl);
+                            thisTrip.setPhoto(downloadUrl);
+                            tripReference.child(tripID).setValue(thisTrip);
+
+                            //Need to update join list here
+
+
+                            Toast.makeText(EditTripActivity.this, "Trip Successfully Updated", Toast.LENGTH_LONG).show();
+                            finish();
+
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle unsuccessful uploads
+                            Toast.makeText(EditTripActivity.this, "Image upload failure", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+
+                tripReference.child(tripID).setValue(thisTrip);
+                Toast.makeText(EditTripActivity.this, "Trip Successfully Updated", Toast.LENGTH_LONG).show();
+                finish();
+            }
+        }else{
+            //call an async task here
+            new GetLocation(this).execute(tripLocation);
+        }
+    }
+    public void afterLocationRetrieved(double latitude, double longitude){
+        String tripLocation = location.getText().toString();
         thisTrip.setName(name.getText().toString());
-        thisTrip.setLocation(location.getText().toString());
+        thisTrip.setLocation(tripLocation);
+        thisTrip.setLat(latitude);
+        thisTrip.setLongitude(longitude);
         thisTrip.setCreator(user.getUid());
-        final DatabaseReference tripMembers =  mDatabase.child("tripMembers").child(tripID);
+        final DatabaseReference tripMembers = mDatabase.child("tripMembers").child(tripID);
         tripMembers.child(user.getUid()).setValue(true);
         /*tripMembers.addValueEventListener(new ValueEventListener() {
             @Override
@@ -173,11 +260,11 @@ public class EditTripActivity extends AppCompatActivity {
             }
         });*/
 //        Log.d( "onEditListener: ", filePath.toString() + "");
-        if(filePath != null) {
+        if (filePath != null) {
             try {
 
-                Log.d( "onEditListener: ", "uploading" + tripID);
-                StorageReference avatarRef = storageRef.child("tripimages/" + tripID  + ".png");
+                Log.d("onEditListener: ", "uploading" + tripID);
+                StorageReference avatarRef = storageRef.child("tripimages/" + tripID + ".png");
 
                 UploadTask uploadTask = avatarRef.putFile(filePath);
 
@@ -200,7 +287,6 @@ public class EditTripActivity extends AppCompatActivity {
                         //Need to update join list here
 
 
-
                         Toast.makeText(EditTripActivity.this, "Trip Successfully Updated", Toast.LENGTH_LONG).show();
                         finish();
 
@@ -216,15 +302,19 @@ public class EditTripActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }else{
+        } else {
 
-           tripReference.child(tripID).setValue(thisTrip);
+            tripReference.child(tripID).setValue(thisTrip);
             Toast.makeText(EditTripActivity.this, "Trip Successfully Updated", Toast.LENGTH_LONG).show();
             finish();
         }
 
     }
+    public void invalidTrip(){
+        Toast.makeText(EditTripActivity.this, "Invalid Location, Please try again", Toast.LENGTH_LONG).show();
 
+
+    }
     public void uploadTripImage(View v){
         Intent intent = new Intent();
         intent.setType("image/*");
