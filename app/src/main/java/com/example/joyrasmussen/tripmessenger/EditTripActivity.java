@@ -311,7 +311,7 @@ public class EditTripActivity extends AppCompatActivity {
 
     }
     public void invalidTrip(){
-        Toast.makeText(EditTripActivity.this, "Invalid Location, Please try again", Toast.LENGTH_LONG).show();
+        Toast.makeText(EditTripActivity.this, "Invalid Location,\n Please try entering a valid Location and select \"Create Trip\" again", Toast.LENGTH_LONG).show();
 
 
     }

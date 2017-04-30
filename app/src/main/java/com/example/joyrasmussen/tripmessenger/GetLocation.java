@@ -3,6 +3,7 @@ package com.example.joyrasmussen.tripmessenger;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class GetLocation extends AsyncTask<String, Void, List< Address>>{
 
     @Override
     protected void onPostExecute(List<Address> addresses) {
-        if(addresses!= null) {
+        if(!addresses.isEmpty()) {
             mTripActivity.afterLocationRetrieved(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
         }else{
             mTripActivity.invalidTrip();
