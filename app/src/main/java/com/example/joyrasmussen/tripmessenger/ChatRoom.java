@@ -44,7 +44,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
+/*
+HW 09 Part A
+Group 34
+Robert Holt & Joy Rasmussen
+ */
 public class ChatRoom extends AppCompatActivity {
     private String chatID;
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();

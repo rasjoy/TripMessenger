@@ -10,10 +10,11 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-/**
- * Created by joyrasmussen on 4/19/17.
+/*
+HW 09 Part A
+Group 34
+Robert Holt & Joy Rasmussen
  */
-
 public class TripHolder extends RecyclerView.ViewHolder {
    TextView name, owner;
     ImageView image;

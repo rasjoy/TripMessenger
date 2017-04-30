@@ -42,7 +42,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-
+/*
+HW 09 Part A
+Group 34
+Robert Holt & Joy Rasmussen
+ */
 public class ManageFriends extends Fragment {
 
     UserRetrival mUserRetrival;

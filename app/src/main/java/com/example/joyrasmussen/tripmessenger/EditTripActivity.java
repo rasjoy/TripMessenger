@@ -33,7 +33,11 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.util.UUID;
-
+/*
+HW 09 Part A
+Group 34
+Robert Holt & Joy Rasmussen
+ */
 public class EditTripActivity extends AppCompatActivity {
     FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener mAuthListener;

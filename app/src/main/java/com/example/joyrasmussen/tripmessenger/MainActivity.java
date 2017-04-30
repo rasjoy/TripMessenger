@@ -28,6 +28,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+/*
+HW 09 Part A
+Group 34
+Robert Holt & Joy Rasmussen
+ */
 public class MainActivity extends AppCompatActivity implements ManageFriends.OnFragmentInteractionListener,SignInFragment.OnFragmentInteractionListener,ViewTripFragment.OnFragmentInteractionListener, UserFragment.OnFragmentInteractionListener, UserRetrival, TripRetrival, GoogleApiClient.OnConnectionFailedListener {
     FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -129,6 +134,8 @@ public class MainActivity extends AppCompatActivity implements ManageFriends.OnF
             case R.id.goToChatMenuTrip:
                 return false;
             case R.id.tripAddPlace:
+                return false;
+            case R.id.viewRoute:
                 return false;
             case R.id.mangageFriendsMain:
 //                Intent mf = new Intent(this, ManageFriends.class);

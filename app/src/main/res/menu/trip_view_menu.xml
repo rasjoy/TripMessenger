@@ -9,6 +9,10 @@
         android:id="@+id/edtiTripView"
         android:title="@string/editTrip"
         android:visible="false" />
+
+    <item
+        android:id="@+id/viewRoute"
+        android:title="@string/viewRoute" />
     <item
         android:id="@+id/leaveTripMenu"
         android:title="@string/leaveChat" />

@@ -3,10 +3,11 @@ package com.example.joyrasmussen.tripmessenger;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-/**
- * Created by joyrasmussen on 4/15/17.
+/*
+HW 09 Part A
+Group 34
+Robert Holt & Joy Rasmussen
  */
-
 public class MessageHolder extends RecyclerView.ViewHolder {
     public MessageHolder(View itemView) {
         super(itemView);

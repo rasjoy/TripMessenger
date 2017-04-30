@@ -3,7 +3,11 @@ package com.example.joyrasmussen.tripmessenger;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/*
+HW 09 Part A
+Group 34
+Robert Holt & Joy Rasmussen
+ */
 public class User {
 
     String id, firstName, lastName, gender, imageURL, fullName;

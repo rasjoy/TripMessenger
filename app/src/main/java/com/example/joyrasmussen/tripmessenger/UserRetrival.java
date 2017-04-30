@@ -2,8 +2,10 @@ package com.example.joyrasmussen.tripmessenger;
 
 import com.google.firebase.auth.FirebaseUser;
 
-/**
- * Created by joyrasmussen on 4/17/17.
+/*
+HW 09 Part A
+Group 34
+Robert Holt & Joy Rasmussen
  */
 
 public interface UserRetrival {

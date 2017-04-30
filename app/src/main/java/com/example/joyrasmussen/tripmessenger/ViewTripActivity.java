@@ -35,7 +35,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+/*
+HW 09 Part A
+Group 34
+Robert Holt & Joy Rasmussen
+ */
 public class ViewTripActivity extends AppCompatActivity implements UserFragment.OnFragmentInteractionListener,  UserRetrival{
     FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener mAuthListener;
