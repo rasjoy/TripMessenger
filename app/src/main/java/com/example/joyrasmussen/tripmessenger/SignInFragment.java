@@ -37,8 +37,10 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import java.util.Arrays;
 
 
-/**
- * A simple {@link Fragment} subclass.
+/*
+HW 09 Part A
+Group 34
+Robert Holt & Joy Rasmussen
  */
 public class SignInFragment extends Fragment  implements  GoogleApiClient.OnConnectionFailedListener{
 

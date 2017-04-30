@@ -36,8 +36,10 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 
-/**
- * A simple {@link Fragment} subclass.
+/*
+HW 09 Part A
+Group 34
+Robert Holt & Joy Rasmussen
  */
 public class UserFragment extends Fragment {
     MenuItem editProfItem;

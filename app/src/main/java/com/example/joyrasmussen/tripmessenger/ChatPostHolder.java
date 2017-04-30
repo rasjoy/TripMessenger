@@ -17,8 +17,10 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Locale;
 
-/**
- * Created by joyrasmussen on 4/16/17.
+/*
+HW 09 Part A
+Group 34
+Robert Holt & Joy Rasmussen
  */
 
 public class ChatPostHolder extends RecyclerView.ViewHolder{

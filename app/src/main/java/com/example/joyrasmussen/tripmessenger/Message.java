@@ -2,10 +2,11 @@ package com.example.joyrasmussen.tripmessenger;
 
 import java.util.ArrayList;
 
-/**
- * Created by joyrasmussen on 4/15/17.
+/*
+HW 09 Part A
+Group 34
+Robert Holt & Joy Rasmussen
  */
-
 public class Message {
     long  time;
     String text, usrId, id, imageURL;

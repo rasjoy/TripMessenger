@@ -28,7 +28,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
-
+/*
+HW 09 Part A
+Group 34
+Robert Holt & Joy Rasmussen
+ */
 public class EditProfile extends AppCompatActivity {
 
     EditText fnameET, lnameET, genderET;

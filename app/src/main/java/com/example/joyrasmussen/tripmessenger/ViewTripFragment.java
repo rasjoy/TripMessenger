@@ -50,8 +50,10 @@ import java.util.Map;
 import static android.app.Activity.RESULT_OK;
 
 
-/**
- * A simple {@link Fragment} subclass.
+/*
+HW 09 Part A
+Group 34
+Robert Holt & Joy Rasmussen
  */
 public class ViewTripFragment extends Fragment {
     MenuItem canEdit;
@@ -136,6 +138,12 @@ public class ViewTripFragment extends Fragment {
                 }
                 Log.d( "onOptionsItemSelected: ", "place");
                 return true;
+
+            case R.id.viewRoute:
+                Intent i = new Intent(getContext(), RouteActivity.class);
+                i.putExtra("tripID", tripID);
+                startActivity(i);
+
             default:
                 return  false;
 

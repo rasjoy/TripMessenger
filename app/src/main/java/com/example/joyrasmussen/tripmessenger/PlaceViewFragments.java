@@ -31,6 +31,6 @@ public class PlaceViewFragments extends Fragment implements OnMapReadyCallback{
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        
+
     }
 }
