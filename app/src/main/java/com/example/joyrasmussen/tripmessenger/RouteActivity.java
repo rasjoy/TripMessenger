@@ -72,15 +72,6 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
-
-
-
-
-//        temp.add("Boston,MA");
-//        temp.add("Charlestown,MA");
-//        temp.add("Lexington,MA");
-//        makeURL(temp);
-
     }
 
     public void makeURL(ArrayList<String> places) {
@@ -136,7 +127,6 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
                 new LatLng(SWlat, SWlng), new LatLng(NElat, NElng));
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
-
 
         for (int i = 0; i < points.size() - 1; i++) {
             LatLng src = points.get(i);
