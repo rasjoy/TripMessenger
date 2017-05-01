@@ -23,6 +23,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -51,6 +52,7 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
     Double lat;
     Double lng;
 
+    ArrayList<LatLng> markerPoints;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +66,8 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
         provider = locationManager.getBestProvider(new Criteria(), false);
 
         location = null;
+        markerPoints = new ArrayList<>();
+
 
         try {
             location = locationManager.getLastKnownLocation(provider);
@@ -76,9 +80,6 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
 
             lat = location.getLatitude();
             lng = location.getLongitude();
-
-            Log.i("lat:", lat.toString());
-            Log.i("long:", lng.toString());
 
 
         } else {
@@ -100,7 +101,11 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
 
                 for (final DataSnapshot thisSnapshot : dataSnapshot.getChildren()) {
 
-                    places.add(thisSnapshot.getKey());
+                    places.add(thisSnapshot.child("lat").getValue().toString() + "," + thisSnapshot.child("longitude").getValue().toString());
+
+                    LatLng c = new LatLng(Double.parseDouble(thisSnapshot.child("lat").getValue().toString()),Double.parseDouble(thisSnapshot.child("longitude").getValue().toString()));
+
+                    markerPoints.add(c);
                 }
 
                 if (places.size() < 2) {
@@ -133,7 +138,8 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
         ArrayList<String> idPlaces = new ArrayList();
 
         for(String p : places){
-             idPlaces.add("place_id:" + p);
+            idPlaces.add(p);
+//             idPlaces.add("place_id:" + p);
         }
 
         if (places.size() == 1) {
@@ -171,6 +177,15 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
 
     public void drawPolyline(String l, Double NElat, Double NElng, Double SWlat, Double SWlng) {
 
+        Marker marker = mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(lat, lng))
+                .title("Start"));
+
+        for(LatLng n : markerPoints){
+            mMap.addMarker(new MarkerOptions()
+                    .position(n));
+        }
+
         List<LatLng> points = decodePoly(l);
 
         LatLngBounds bounds = new LatLngBounds(
@@ -181,6 +196,7 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
         for (int i = 0; i < points.size() - 1; i++) {
             LatLng src = points.get(i);
             LatLng dest = points.get(i + 1);
+
 
             Polyline line = mMap.addPolyline(
                     new PolylineOptions().add(
