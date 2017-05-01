@@ -128,6 +128,11 @@ public class ViewTripFragment extends Fragment {
                 Log.d( "onOptionsItemSelected: ", "edit");
 
                 return true;
+            case R.id.viewPlaces:
+                Intent intentPlace = new Intent(getContext(), ViewPlaces.class);
+                intentPlace.putExtra("tripID", tripID);
+                startActivity(intentPlace);
+                return true;
             case R.id.tripAddPlace:
                 try {
                     addPlaces();

@@ -6,6 +6,9 @@
         android:id="@+id/tripAddPlace"
         android:title="@string/addPlace" />
     <item
+        android:id="@+id/viewPlaces"
+        android:title="@string/ViewPlaces" />
+    <item
         android:id="@+id/edtiTripView"
         android:title="@string/editTrip"
         android:visible="false" />

@@ -42,4 +42,5 @@
     <string name="viewRoute">View route</string>
     <string name="google_maps_key">AIzaSyB7MEH9IB_NyOdhLX_b9lK-zhZVCuUvcSA</string>
     <string name="ViewPlaces">View Places</string>
+    <string name="title_activity_view_places">Places</string>
 </resources>

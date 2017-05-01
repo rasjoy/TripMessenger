@@ -137,6 +137,8 @@ public class MainActivity extends AppCompatActivity implements ManageFriends.OnF
                 return false;
             case R.id.viewRoute:
                 return false;
+            case R.id.viewPlaces:
+                return false;
             case R.id.mangageFriendsMain:
 //                Intent mf = new Intent(this, ManageFriends.class);
 //                startActivity(mf);

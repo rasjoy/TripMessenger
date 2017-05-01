@@ -103,46 +103,51 @@ public class ViewTripActivity extends AppCompatActivity implements UserFragment.
     }
     public void populateList(){
         query = userReference.orderByKey();
-        mAdapter = new FirebaseRecyclerAdapter<User, UserPopulateHolder>(User.class, R.layout.trip_members, UserPopulateHolder.class, query) {
-            @Override
-            protected void populateViewHolder(UserPopulateHolder viewHolder, final User model, int position) {
+        try {
+            mAdapter = new FirebaseRecyclerAdapter<User, UserPopulateHolder>(User.class, R.layout.trip_members, UserPopulateHolder.class, query) {
+                @Override
+                protected void populateViewHolder(UserPopulateHolder viewHolder, final User model, int position) {
 
-                Log.d( "populateViewHolder: ", whoIsAMember.toString() + "\n " + model.getId());
-                if(whoIsAMember.contains(model.getId())) {
-                    Log.d("whoIsMember ", model.toString());
-                    viewHolder.layout.setVisibility(View.VISIBLE);
-                    viewHolder.isPart(model.getFirstName(), model.getLastName(), model.getImageURL());
-                    if(thisTrip.getCreator().equals(model.getId())){
-                        viewHolder.setOwner();
-                    }
-                    viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            viewUser = model.getId();
-                            findViewById(R.id.elements).setVisibility(View.INVISIBLE);
-                            getSupportFragmentManager().beginTransaction()
+                    Log.d("populateViewHolder: ", whoIsAMember.toString() + "\n " + model.getId());
+                    if (whoIsAMember.contains(model.getId())) {
+                        Log.d("whoIsMember ", model.toString());
+                        viewHolder.layout.setVisibility(View.VISIBLE);
+                        viewHolder.isPart(model.getFirstName(), model.getLastName(), model.getImageURL());
+                        if (thisTrip.getCreator().equals(model.getId())) {
+                            viewHolder.setOwner();
+                        }
+                        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                viewUser = model.getId();
+                                findViewById(R.id.elements).setVisibility(View.INVISIBLE);
+                                getSupportFragmentManager().beginTransaction()
                                         .replace(R.id.viewTrip, new UserFragment(), "user")
                                         .addToBackStack(null).commit();
 
-                        }
-                    });
+                            }
+                        });
 
 
+                    } else {
+                        RecyclerView.LayoutParams param = (RecyclerView.LayoutParams) viewHolder.itemView.getLayoutParams();
+                        param.width = 0;
+                        param.height = 0;
+                        viewHolder.itemView.setLayoutParams(param);
 
-                }else{
-                    RecyclerView.LayoutParams param = (RecyclerView.LayoutParams)viewHolder.itemView.getLayoutParams();
-                    param.width = 0;
-                    param.height = 0;
-                    viewHolder.itemView.setLayoutParams(param);
 
-
+                    }
                 }
-            }
-        };
-        mLayoutManager = new LinearLayoutManager(this);
-        members.setHasFixedSize(false);
-        members.setLayoutManager(mLayoutManager);
-        members.setAdapter(mAdapter);
+            };
+            mLayoutManager = new LinearLayoutManager(this);
+            members.setHasFixedSize(false);
+            members.setLayoutManager(mLayoutManager);
+            members.setAdapter(mAdapter);
+        } catch (IndexOutOfBoundsException e) {
+            populateList();
+            e.printStackTrace();
+
+        }
 
     }
     @Override
