@@ -29,6 +29,7 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -63,7 +64,7 @@ public class ViewTripFragment extends Fragment {
     FirebaseUser user;
     LinearLayoutManager mLayoutManager;
     TextView location, name, owner;
-    Button editTrip, enterChatroom;
+    Button editTrip, enterChatroom, viewPlace;
     RecyclerView members;
     ImageView image;
     Trip thisTrip;
@@ -195,6 +196,7 @@ public class ViewTripFragment extends Fragment {
         name = (TextView) getView().findViewById(R.id.tripNameViewTrip);
         editTrip = (Button) getView().findViewById(R.id.editTripButton);
         enterChatroom = (Button) getView().findViewById(R.id.enterChatTripView);
+        viewPlace = (Button) getView().findViewById(R.id.viewPlacesButton);
         members = (RecyclerView) getView().findViewById(R.id.tripMemberRecycler);
         owner = (TextView) getView().findViewById(R.id.ownerETtripView);
         image = (ImageView) getView().findViewById(R.id.tripViewImage);
@@ -223,6 +225,15 @@ public class ViewTripFragment extends Fragment {
                 Intent intent = new Intent(getContext(), EditTripActivity.class);
                 intent.putExtra("tripID", tripID);
                 startActivity(intent);
+            }
+        });
+        viewPlace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentPlace = new Intent(getContext(), ViewPlaces.class);
+                intentPlace.putExtra("tripID", tripID);
+                startActivity(intentPlace);
+
             }
         });
 
@@ -422,6 +433,11 @@ public class ViewTripFragment extends Fragment {
     private void addPlaces() throws GooglePlayServicesNotAvailableException, GooglePlayServicesRepairableException {
 
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+       LatLngBounds.Builder latBuild  = new LatLngBounds.Builder();
+        latBuild.include(new LatLng(thisTrip.getLat(), thisTrip.getLongitude()));
+        latBuild.include(new LatLng(thisTrip.getLat(), thisTrip.getLongitude()+ .1));
+
+        builder.setLatLngBounds(latBuild.build());
         Log.d( "addPlaces: ", "this part works");
 
         startActivityForResult(builder.build(getActivity()), MainActivity.PLACE_PICKER_REQUEST);
@@ -434,6 +450,7 @@ public class ViewTripFragment extends Fragment {
             Place place = PlacePicker.getPlace(data, getActivity());
                 if(place != null){
                     Log.d("result", "there is a place");
+                    Toast.makeText(getActivity(),place.getName()+ " was successfully added to palces", Toast.LENGTH_SHORT).show();
                     LatLng latLong = place.getLatLng();
                     TripPlace myPlace = new TripPlace(place.getId(), place.getName().toString(), latLong.latitude, latLong.longitude);
                     placeReference.child(myPlace.getId()).setValue(myPlace);
