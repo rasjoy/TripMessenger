@@ -1,11 +1,22 @@
 package com.example.joyrasmussen.tripmessenger;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -25,11 +36,20 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RouteActivity extends FragmentActivity implements OnMapReadyCallback {
+import static com.example.joyrasmussen.tripmessenger.MainActivity.mGoogleApiClient;
+
+public class RouteActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
     private GoogleMap mMap;
     DatabaseReference dbRef;
     final String key = "AIzaSyAHZi6Y43oMrw_Q7D7j9h2T-XcrmMU4Z60";
+
+    LocationManager locationManager;
+    String provider;
+    Location location;
+
+    Double lat;
+    Double lng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +60,34 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        provider = locationManager.getBestProvider(new Criteria(), false);
+
+        location = null;
+
+        try {
+            location = locationManager.getLastKnownLocation(provider);
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
+
+        if (location != null) {
+            Log.i("Location:", "Found");
+
+            lat = location.getLatitude();
+            lng = location.getLongitude();
+
+            Log.i("lat:", lat.toString());
+            Log.i("long:", lng.toString());
+
+
+        } else {
+            Log.i("Location:", "Not found");
+        }
 
 //        String url = "https://maps.googleapis.com/maps/api/directions/json?origin=Toronto&destination=Montreal&key=" + key;
 //        String url = "https://maps.googleapis.com/maps/api/directions/json?origin=Boston,MA&destination=Boston,MA&waypoints=Charlestown,MA|Lexington,MA&key=" + key;
+
 
         final ArrayList<String> places = new ArrayList<>();
         String tripID = getIntent().getStringExtra("tripID");
@@ -55,10 +100,10 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
 
                 for (final DataSnapshot thisSnapshot : dataSnapshot.getChildren()) {
 
-                  places.add(thisSnapshot.getKey());
+                    places.add(thisSnapshot.getKey());
                 }
 
-                if(places.size() < 2){
+                if (places.size() < 2) {
                     Toast.makeText(RouteActivity.this, "You need at least two locations!", Toast.LENGTH_SHORT).show();
                 } else {
                     makeURL(places);
@@ -74,6 +119,11 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
 
     }
 
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
     public void makeURL(ArrayList<String> places) {
 
         String baseURL = "https://maps.googleapis.com/maps/api/directions/json?origin=";
@@ -86,11 +136,11 @@ public class RouteActivity extends FragmentActivity implements OnMapReadyCallbac
              idPlaces.add("place_id:" + p);
         }
 
-        if (places.size() == 2) {
-            result.append(idPlaces.get(0) + "&destination=" + idPlaces.get(1));
+        if (places.size() == 1) {
+            result.append(lat + "," + lng + "&destination=" + idPlaces.get(0));
         } else {
 
-            result.append(idPlaces.get(0) + "&destination=" + idPlaces.get(0) + "&waypoints=");
+            result.append(lat + "," + lng + "&destination=" + lat + "," + lng+ "&waypoints=");
             places.remove(0);
 
             for (String p : idPlaces) {
